@@ -4,4 +4,3 @@ end tell
 set windowMoveScpt to scriptPath & "windowMove.scpt"
 set windowMove to load script file windowMoveScpt
 windowMove's windowMove(0, -1)
-
