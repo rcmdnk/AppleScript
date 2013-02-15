@@ -9,9 +9,8 @@ property GEEKTOOL_WINDOW : 1
 property GEEKTOOL_MARGIN : 10
 
 
-on windowSize(xsize, ysize, xpos, ypos, leftmargin, rightmargin, topmargin, bottommargin, appName, windowNumber)
-	
-	--* debug mode
+on windowSize(pars)
+	-- debug mode
 	if DEBUG_LEVEL > 0 then
 		log "debug mode = " & DEBUG_LEVEL
 		if DEBUG_LEVEL > 1 then
@@ -19,37 +18,46 @@ on windowSize(xsize, ysize, xpos, ypos, leftmargin, rightmargin, topmargin, bott
 		end if
 	end if
 	
-	--* set default size (full screen), if not set
-	if xsize is "" then
-		set xsize to 1
-	end if
-	if ysize is "" then
-		set ysize to 1
-	end if
+	-- set Parameters
+	set {xsize, ysize, xpos, ypos, leftmargin, rightmargin, topmargin, bottommargin, appName, windowNumber, monPosX, monPosY} to {1, 1, 0, 0, DEF_LEFT_MARGIN, DEF_RIGHT_MARGIN, DEF_TOP_MARGIN, DEF_BOTTOM_MARGIN, "", "", "", ""}
+	try
+		set xsize to xsize of pars
+	end try
+	try
+		set ysize to ysize of pars
+	end try
+	try
+		set xpos to xpos of pars
+	end try
+	try
+		set ypos to ypos of pars
+	end try
+	try
+		set leftmargin to leftmargin of pars
+	end try
+	try
+		set rightmargin to rightmargin of pars
+	end try
+	try
+		set topmargin to topmargin of pars
+	end try
+	try
+		set bottommargin to bottommargin of pars
+	end try
+	try
+		set appName to appName of pars
+	end try
+	try
+		set windowNumber to windowNumber of pars
+	end try
+	try
+		set monPosX to monPosX of pars
+	end try
+	try
+		set monPosY to monPosY of pars
+	end try
 	
-	--* set default position (left upper), if not set
-	if xpos is "" then
-		set xpos to 0
-	end if
-	if ypos is "" then
-		set ypos to 0
-	end if
-	
-	--* set margins, if not set
-	if leftmargin is "" then
-		set leftmargin to DEF_LEFT_MARGIN
-	end if
-	if rightmargin is "" then
-		set rightmargin to DEF_RIGHT_MARGIN
-	end if
-	if topmargin is "" then
-		set topmargin to DEF_TOP_MARGIN
-	end if
-	if bottommargin is "" then
-		set bottommargin to DEF_BOTTOM_MARGIN
-	end if
-	
-	--* get application name and window number, if appName is "", if windowNumber is not set, set 1
+	-- get application name and window number, if appName is "", if windowNumber is not set, set 1
 	if appName is "" then
 		tell application "System Events"
 			set pList to name of every process whose frontmost is true
@@ -63,23 +71,23 @@ on windowSize(xsize, ysize, xpos, ypos, leftmargin, rightmargin, topmargin, bott
 	
 	
 	if DEBUG_LEVEL > 0 then
-		log "windowSize(" & xsize & ", " & ysize & ", " & xpos & ", " & ypos & ", " & leftmargin & ", " & rightmargin & ", " & topmargin & ", " & bottommargin & ", " & appName & ", " & windowNumber & ")"
+		log "windowSize(" & xsize & ", " & ysize & ", " & xpos & ", " & ypos & ", " & leftmargin & ", " & rightmargin & ", " & topmargin & ", " & bottommargin & ", " & appName & ", " & windowNumber & ", " & monPosX & ", " & monPosY & ")"
 		if DEBUG_LEVEL > 1 then
-			display dialog "windowSize(" & xsize & ", " & ysize & ", " & xpos & ", " & ypos & ", " & leftmargin & ", " & rightmargin & ", " & topmargin & ", " & bottommargin & ", " & appName & ", " & windowNumber & ")"
+			display dialog "windowSize(" & xsize & ", " & ysize & ", " & xpos & ", " & ypos & ", " & leftmargin & ", " & rightmargin & ", " & topmargin & ", " & bottommargin & ", " & appName & ", " & windowNumber & ", " & monPosX & ", " & monPosY & ")"
 		end if
 	end if
 	
-	--* first, move monitoring applications to correct places, if available
+	-- first, move monitoring applications to correct places, if available
 	try
 		tell application "Finder"
 			set scriptPath to (path to me)'s folder as text
 		end tell
 		set moveForMonScpt to scriptPath & "moveForMon.scpt"
 		set moveForMon to load script file moveForMonScpt
-		moveForMon's moveForMon()
+		moveForMon's moveForMon(false)
 	end try
 	
-	--* get window position
+	-- get window position
 	tell application "System Events"
 		tell process appName
 			try
@@ -95,39 +103,44 @@ on windowSize(xsize, ysize, xpos, ypos, leftmargin, rightmargin, topmargin, bott
 		end tell
 	end tell
 	
-	--* get screen (display) size
-	try
+	-- get screen (display) size
+	if monPosX is not "" and monPosY is not "" then
 		set svs to screenVisibleSizeAtPoint(item 1 of winPos, item 2 of winPos)
 		set dPosX to item 1 of svs
-		
-	on error
+	else
 		try
-			set svs to screenVisibleSizeAtPoint(item 1 of winPosRT, item 2 of winPosRT)
+			set svs to screenVisibleSizeAtPoint(item 1 of winPos, item 2 of winPos)
 			set dPosX to item 1 of svs
 			
 		on error
 			try
-				set svs to screenVisibleSizeAtPoint(item 1 of winPosLB, item 2 of winPosLB)
+				set svs to screenVisibleSizeAtPoint(item 1 of winPosRT, item 2 of winPosRT)
 				set dPosX to item 1 of svs
 				
 			on error
-				set svs to screenVisibleSizeAtPoint(item 1 of winPosRB, item 2 of winPosRB)
-				set dPosX to item 1 of svs
+				try
+					set svs to screenVisibleSizeAtPoint(item 1 of winPosLB, item 2 of winPosLB)
+					set dPosX to item 1 of svs
+					
+				on error
+					set svs to screenVisibleSizeAtPoint(item 1 of winPosRB, item 2 of winPosRB)
+					set dPosX to item 1 of svs
+				end try
 			end try
 		end try
-	end try
-	set dPosX to item 1 of svs
-	set dPosY to item 2 of svs
-	set dWidth to item 3 of svs
-	set dHeight to item 4 of svs
-	if DEBUG_LEVEL > 0 then
-		log "svs(" & dPosX & ", " & dPosY & ", " & dWidth & ", " & dHeight & ")"
-		if DEBUG_LEVEL > 1 then
-			display dialog "svs(" & dPosX & ", " & dPosY & ", " & dWidth & ", " & dHeight & ")"
+		set dPosX to item 1 of svs
+		set dPosY to item 2 of svs
+		set dWidth to item 3 of svs
+		set dHeight to item 4 of svs
+		if DEBUG_LEVEL > 0 then
+			log "svs(" & dPosX & ", " & dPosY & ", " & dWidth & ", " & dHeight & ")"
+			if DEBUG_LEVEL > 1 then
+				display dialog "svs(" & dPosX & ", " & dPosY & ", " & dWidth & ", " & dHeight & ")"
+			end if
 		end if
 	end if
 	
-	--* get GeekTool's position
+	-- get GeekTool's position
 	tell application "System Events"
 		try
 			tell process "GeekTool"
@@ -140,7 +153,7 @@ on windowSize(xsize, ysize, xpos, ypos, leftmargin, rightmargin, topmargin, bott
 		end try
 	end tell
 	
-	--* check if the window and GeekTool are in same screen
+	-- check if the window and GeekTool are in same screen
 	if gtflag is 1 then
 		set gtsvs to screenVisibleSizeAtPoint(item 1 of gtPos, item 2 of gtPos)
 		set gtdPosX to item 1 of gtsvs
@@ -160,10 +173,10 @@ on windowSize(xsize, ysize, xpos, ypos, leftmargin, rightmargin, topmargin, bott
 		set geekToolWidth to 0
 	end if
 	
-	--* subtract geekToolWidth from display width
+	-- subtract geekToolWidth from display width
 	set dWidth to dWidth - geekToolWidth
 	
-	--* resize/move
+	-- resize/move
 	tell application "System Events"
 		tell process appName
 			try
@@ -171,7 +184,7 @@ on windowSize(xsize, ysize, xpos, ypos, leftmargin, rightmargin, topmargin, bott
 			on error
 				set topWindow to window windowNumber
 			end try
-			--* set screen size w/o margins
+			-- set screen size w/o margins
 			--set useSize to {dWidth - leftmargin - rightmargin, dHeight - topmargin - bottommargin}
 			--if DEBUG_LEVEL > 0 then
 			--	log "useSize(" & item 1 of useSize & ", " & item 2 of useSize & ")"
@@ -179,11 +192,11 @@ on windowSize(xsize, ysize, xpos, ypos, leftmargin, rightmargin, topmargin, bott
 			--		display dialog "useSize(" & item 1 of useSize & ", " & item 2 of useSize & ")"
 			--	end if
 			--end if
-			--* no margin w/o edges of screen
+			-- no margin w/o edges of screen
 			--set wpos to {dPosX + leftmargin + xpos * (item 1 of useSize), dPosY + topmargin + ypos * (item 2 of useSize)}
 			--set wsize to {xsize * (item 1 of useSize), ysize * (item 2 of useSize)}
 			
-			--* set margin in any place
+			-- set margin in any place
 			set wpos to {dPosX + leftmargin + xpos * dWidth, dPosY + topmargin + ypos * dHeight}
 			set wsize to {xsize * dWidth - leftmargin - rightmargin, ysize * dHeight - topmargin - bottommargin}
 			
@@ -223,8 +236,8 @@ on windowSize(xsize, ysize, xpos, ypos, leftmargin, rightmargin, topmargin, bott
 				end if
 				
 				set size to wsize
-				--* this shows an error for iTerm!
-				--* maybe properties is changed when set size…???
+				-- this shows an error for iTerm!
+				-- maybe properties is changed when set size…???
 				--if DEBUG_LEVEL > 0 then
 				--	log "preoperties after resize= "
 				--	properties
@@ -245,7 +258,7 @@ on windowSize(xsize, ysize, xpos, ypos, leftmargin, rightmargin, topmargin, bott
 					log "preoperties after resize= "
 					properties
 					if DEBUG_LEVEL > 1 then
-						display dialog "set final position"
+						display dialog "set final position to (" & item 1 of wpos & ", " & item 2 of wpos & ")"
 					end if
 				end if
 				set position to wpos
@@ -261,7 +274,7 @@ on windowSize(xsize, ysize, xpos, ypos, leftmargin, rightmargin, topmargin, bott
 end windowSize
 
 on screenVisibleSizeAtPoint(x, y)
-	--* ref: http://memogakisouko.appspot.com/AppleScript.html
+	-- ref: http://memogakisouko.appspot.com/AppleScript.html
 	set theScript to "require 'osx/cocoa'; 
 x = (ARGV[1].to_i);
 y = (ARGV[2].to_i);
@@ -300,3 +313,4 @@ print frameT.size.height;
 	end if
 	return {(paragraph 1 of sizeText) as number, (paragraph 2 of sizeText) as number, (paragraph 3 of sizeText) as number, (paragraph 4 of sizeText) as number}
 end screenVisibleSizeAtPoint
+

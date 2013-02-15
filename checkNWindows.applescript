@@ -9,8 +9,6 @@ tell application "System Events"
 	set allp to properties of every process whose frontmost is true
 end tell
 
-set appName to "cooViewer"
-
 tell application "System Events"
 	try
 		tell process appName
@@ -43,3 +41,4 @@ tell application appName
 		display dialog "can't get nDocuments in application"
 	end try
 end tell
+

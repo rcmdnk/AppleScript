@@ -1,5 +1,4 @@
-on test(x)
-	set a to x
-end test
+set a to {hoge:1}
+log hoge of a
+log hoge
 
-test(10)
