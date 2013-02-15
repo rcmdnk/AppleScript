@@ -99,3 +99,4 @@ print frameT.size.height;
 	end if
 	return {(paragraph 1 of sizeText) as number, (paragraph 2 of sizeText) as number, (paragraph 3 of sizeText) as number, (paragraph 4 of sizeText) as number}
 end screenVisibleSizeAtPoint
+

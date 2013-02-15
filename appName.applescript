@@ -4,3 +4,4 @@ tell application "System Events"
 	set appName to item 1 of pList
 end tell
 display dialog appName
+
