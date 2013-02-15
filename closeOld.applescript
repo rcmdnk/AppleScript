@@ -70,5 +70,3 @@ tell application appName
 		--display dialog "close, ok"
 	end if
 end tell
-
-

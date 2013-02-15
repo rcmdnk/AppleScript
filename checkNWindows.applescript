@@ -41,4 +41,3 @@ tell application appName
 		display dialog "can't get nDocuments in application"
 	end try
 end tell
-

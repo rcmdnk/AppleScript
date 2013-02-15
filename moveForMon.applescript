@@ -138,4 +138,3 @@ end moveForMon
 on run
 	moveForMon(false)
 end run
-

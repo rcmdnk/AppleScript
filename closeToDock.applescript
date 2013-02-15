@@ -55,4 +55,3 @@ tell application "System Events"
 		end repeat
 	end tell
 end tell
-
