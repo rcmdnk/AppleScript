@@ -1,4 +1,4 @@
-property DEBUG_LEVEL : 1
+property DEBUG_LEVEL : 0
 
 property DEF_LEFT_MARGIN : 10
 property DEF_RIGHT_MARGIN : 10
@@ -19,7 +19,7 @@ on windowSize(pars)
 	end if
 	
 	-- set Parameters
-	set {xsize, ysize, xpos, ypos, leftmargin, rightmargin, topmargin, bottommargin, appName, windowNumber, monPosX, monPosY} to {1, 1, 0, 0, DEF_LEFT_MARGIN, DEF_RIGHT_MARGIN, DEF_TOP_MARGIN, DEF_BOTTOM_MARGIN, "", "", "", ""}
+	set {xsize, ysize, xpos, ypos, leftmargin, rightmargin, topmargin, bottommargin, appName, windowNumber, monPosX, monPosY, resize} to {1, 1, 0, 0, DEF_LEFT_MARGIN, DEF_RIGHT_MARGIN, DEF_TOP_MARGIN, DEF_BOTTOM_MARGIN, "", "", "", "", 1}
 	try
 		set xsize to xsize of pars
 	end try
@@ -55,6 +55,9 @@ on windowSize(pars)
 	end try
 	try
 		set monPosY to monPosY of pars
+	end try
+	try
+		set resize to resize of pars
 	end try
 	
 	-- get application name and window number, if appName is "", if windowNumber is not set, set 1
@@ -117,7 +120,7 @@ on windowSize(pars)
 	
 	-- get screen (display) size
 	if monPosX is not "" and monPosY is not "" then
-		set svs to getVisibleFrame(item 1 of winPos, item 2 of winPos)
+		set svs to getVisibleFrame(monPosX, monPosY)
 		set dPosX to item 1 of svs
 	else
 		try
@@ -247,8 +250,9 @@ on windowSize(pars)
 						display dialog "set size"
 					end if
 				end if
-				
-				set size to wsize
+				if resize is 1 then
+					set size to wsize
+				end if
 				-- this shows an error for iTerm!
 				-- maybe properties is changed when set size…???
 				--if DEBUG_LEVEL > 0 then
