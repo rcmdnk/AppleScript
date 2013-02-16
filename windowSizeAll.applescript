@@ -25,8 +25,6 @@ tell application "Finder"
 end tell
 set windowSizeScpt to scriptPath & "windowSize.scpt"
 set windowSize to load script file windowSizeScpt
---windowSize's windowSize({})
-
 
 -- main screen
 set svs to windowSize's getVisibleFrame(100, 100)
