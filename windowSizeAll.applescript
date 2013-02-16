@@ -1,101 +1,91 @@
---*mergin
-set leftmargin to 10
-set rightmargin to 10
-set topmargin to 15
-set bottommargin to 20
-
---*app to be excepted
+-- app to be excepted
 set expApp to {"thunderbird-bin", "XRG", "Skype"}
 
---*app to be half size
-set halfSizeApp to {"AdobeReader"}
+-- app to be half size, in left monitor (0.7 times full)
+set halfSizeApp_L to {}
 
---*app only to be moved
-set noResizeApp to {"Finder"}
+-- app to be half size, in right monitor
+set halfSizeApp_R to {"AdobeReader"}
 
---*get screen size
-set svs to screenVisibleSizeAtPoint(1, 1) --*main screen, (-1,1) for secondary screen in the left, (1+(mainscreen size),1 for secondary screen in the right)
-set dPosX to item 1 of svs
+-- app only to be moved, in left monitor
+set noResizeApp_L to {}
+
+-- app only to be moved, in right monitor
+set noResizeApp_R to {"Finder", "Skype", "Microsoft Word", "Microsoft Excel", "Microsoft PowerPoint"}
+
+-- app to be moved left
+set app_L to {"firefox", "Evernote", "thunderbird", "thunderbird-bin", "Mail"}
+
+-- app to be moved right
+set app_R to {"iTerm"}
+
+-- get screen size
+tell application "Finder"
+	set scriptPath to (path to me)'s folder as text
+end tell
+set windowSizeScpt to scriptPath & "windowSize.scpt"
+set windowSize to load script file windowSizeScpt
+--windowSize's windowSize({})
+
+
+-- main screen
+set svs to windowSize's getVisibleFrame(100, 100)
 set dPosX to item 1 of svs
 set dPosY to item 2 of svs
 set dWidth to item 3 of svs
 set dHeight to item 4 of svs
 
---*get application name
+-- try to get left screen
+set dPosX_L to dPosX
+set dPosY_L to dPosY
+try
+	set svsL to windowSize's getVisibleFrame(-100, 100)
+	set dPosX_L to item 1 of svsL
+	set dPosY_L to item 2 of svsL
+end try
+
+-- try to get right screen
+set dPosX_R to dPosX
+set dPosY_R to dPosY
+try
+	set svsR to windowSize's getVisibleFrame(dPosX + dWidth + 100, 100)
+	set dPosX_R to item 1 of svsR
+	set dPosY_R to item 2 of svsR
+end try
+
+
+-- get application name
 tell application "System Events"
 	set appList to (get name of every application process whose visible is true)
 end tell
 
---*repeat for all app
+-- repeat for all app
 repeat with appName in appList
 	if appName is not in expApp then
 		tell application "System Events"
-			tell process appName
-				repeat with win in windows
-					--*get window position
-					set winPos to position of win
-					set winSize to size of win
-					set winPosRT to {(item 1 of winPos) + (item 1 of winSize), item 2 of winPos}
-					set winPosLB to {item 1 of winPos, (item 2 of winPos) + (item 2 of winSize)}
-					set winPosRB to {(item 1 of winPos) + (item 1 of winSize), (item 2 of winPos) + (item 2 of winSize)}
-					
-					--*set position, size
-					set xsize to 1
-					set ysize to 1
-					if appName is in halfSizeApp then
-						set xsize to 0.5
-						--set ysize to 0.5 only x size
-					end if
-					set wpos to {dPosX + leftmargin, dPosY + topmargin}
-					set wsize to {dWidth * xsize - leftmargin - rightmargin, dHeight * ysize - topmargin - bottommargin}
-					tell win
-						set position to wpos
-						if appName is not in noResizeApp then
-							set size to wsize
+			try
+				tell process appName
+					set nW to number of windows
+					repeat with i from 1 to nW
+						log appName & i
+						if appName is in halfSizeApp_L then
+							windowSize's windowSize({appName:appName, windowNumber:i, monPosX:dPosX_L, monPosY:dPosY_L, xsize:0.7, ysize:0.7})
+						else if appName is in halfSizeApp_R then
+							windowSize's windowSize({appName:appName, windowNumber:i, monPosX:dPosX_R, monPosY:dPosY_R, xsize:0.7, ysize:0.7})
+						else if appName is in noResizeApp_L then
+							windowSize's windowSize({appName:appName, windowNumber:i, monPosX:dPosX_L, monPosY:dPosY_L, resize:0})
+						else if appName is in noResizeApp_R then
+							windowSize's windowSize({appName:appName, windowNumber:i, monPosX:dPosX_R, monPosY:dPosY_R, resize:0})
+						else if appName is in app_L then
+							log "app_L" & appName
+							windowSize's windowSize({appName:appName, windowNumber:i, monPosX:dPosX_L, monPosY:dPosY_L})
+						else if appName is in app_R then
+							log "app_R" & appName
+							windowSize's windowSize({appName:appName, windowNumber:i, monPosX:dPosX_R, monPosY:dPosY_R})
 						end if
-					end tell
-				end repeat
-			end tell
+					end repeat
+				end tell
+			end try
 		end tell
 	end if
 end repeat
-
-on screenVisibleSizeAtPoint(x, y)
-	set theScript to "require 'osx/cocoa'; 
-x = (ARGV[1].to_i);
-y = (ARGV[2].to_i);
-
-frameT = 0;
-frameM = OSX::NSScreen.mainScreen().frame();
-screens = OSX::NSScreen.screens;
-cocoaPoint = OSX::NSMakePoint(x, frameM.size.height + frameM.origin.y - y);
-for i in 0..screens.count()-1
-	f = screens[i].frame();
-	if( OSX:: NSMouseInRect(cocoaPoint,f,0) )
-		frameT = screens[i].visibleFrame();
-		break;
-	end
-end
-
-if frameT == 0
-exit 0;
-end
-
-print (frameT.origin.x);
-print '
-';
-print (-frameT.origin.y - frameT.size.height + frameM.size.height - frameM.origin.y);
-print '
-';
-print frameT.size.width;
-print '
-';
-print frameT.size.height;
-"
-	set sizeText to do shell script "/usr/bin/ruby -e " & quoted form of theScript & " '' " & " " & x & " " & y
-	if sizeText is "" then
-		--display dialog "missing value"
-		return 0
-	end if
-	return {(paragraph 1 of sizeText) as number, (paragraph 2 of sizeText) as number, (paragraph 3 of sizeText) as number, (paragraph 4 of sizeText) as number}
-end screenVisibleSizeAtPoint
