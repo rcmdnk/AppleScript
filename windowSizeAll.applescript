@@ -64,6 +64,8 @@ repeat with appName in appList
 			try
 				tell process appName
 					set nW to number of windows
+					display dialog appName & " " & nW
+					
 					repeat with i from 1 to nW
 						log appName & i
 						if appName is in halfSizeApp_L then
