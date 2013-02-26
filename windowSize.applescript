@@ -74,9 +74,9 @@ on windowSize(pars)
 	
 	
 	if DEBUG_LEVEL > 0 then
-		log "windowSize(" & xsize & ", " & ysize & ", " & xpos & ", " & ypos & ", " & leftmargin & ", " & rightmargin & ", " & topmargin & ", " & bottommargin & ", " & appName & ", " & windowNumber & ", " & monPosX & ", " & monPosY & ")"
+		log "windowSize(" & xsize & ", " & ysize & ", " & xpos & ", " & ypos & ", " & leftmargin & ", " & rightmargin & ", " & topmargin & ", " & bottommargin & ", " & appName & ", " & windowNumber & ", " & monPosX & ", " & monPosY & "," & resize & ")"
 		if DEBUG_LEVEL > 1 then
-			display dialog "windowSize(" & xsize & ", " & ysize & ", " & xpos & ", " & ypos & ", " & leftmargin & ", " & rightmargin & ", " & topmargin & ", " & bottommargin & ", " & appName & ", " & windowNumber & ", " & monPosX & ", " & monPosY & ")"
+			display dialog "windowSize(" & xsize & ", " & ysize & ", " & xpos & ", " & ypos & ", " & leftmargin & ", " & rightmargin & ", " & topmargin & ", " & bottommargin & ", " & appName & ", " & windowNumber & ", " & monPosX & ", " & monPosY & "," & resize & ")"
 		end if
 	end if
 	
@@ -143,15 +143,16 @@ on windowSize(pars)
 				end try
 			end try
 		end try
-		set dPosX to item 1 of svs
-		set dPosY to item 2 of svs
-		set dWidth to item 3 of svs
-		set dHeight to item 4 of svs
-		if DEBUG_LEVEL > 0 then
-			log "svs(" & dPosX & ", " & dPosY & ", " & dWidth & ", " & dHeight & ")"
-			if DEBUG_LEVEL > 1 then
-				display dialog "svs(" & dPosX & ", " & dPosY & ", " & dWidth & ", " & dHeight & ")"
-			end if
+	end if
+	
+	set dPosX to item 1 of svs
+	set dPosY to item 2 of svs
+	set dWidth to item 3 of svs
+	set dHeight to item 4 of svs
+	if DEBUG_LEVEL > 0 then
+		log "svs(" & dPosX & ", " & dPosY & ", " & dWidth & ", " & dHeight & ")"
+		if DEBUG_LEVEL > 1 then
+			display dialog "svs(" & dPosX & ", " & dPosY & ", " & dWidth & ", " & dHeight & ")"
 		end if
 	end if
 	
@@ -214,7 +215,6 @@ on windowSize(pars)
 			-- set margin in any place
 			set wpos to {dPosX + leftmargin + xpos * dWidth, dPosY + topmargin + ypos * dHeight}
 			set wsize to {xsize * dWidth - leftmargin - rightmargin, ysize * dHeight - topmargin - bottommargin}
-			log "hoge" & " " & ysize & " " & dHeight & " " & topmargin & " " & bottommargin
 			
 			if DEBUG_LEVEL > 0 then
 				log "wpos(" & item 1 of wpos & ", " & item 2 of wpos & ")"
@@ -227,7 +227,7 @@ on windowSize(pars)
 			tell topWindow
 				if DEBUG_LEVEL > 0 then
 					log "preoperties before= "
-					properties
+					log properties
 				end if
 				set winSize to size
 				if item 1 of winSize > dWidth or item 2 of winSize > dHeight then
@@ -245,7 +245,7 @@ on windowSize(pars)
 				end if
 				if DEBUG_LEVEL > 0 then
 					log "preoperties after position change= "
-					properties
+					log properties
 					if DEBUG_LEVEL > 1 then
 						display dialog "set size"
 					end if
@@ -273,7 +273,7 @@ on windowSize(pars)
 				
 				if DEBUG_LEVEL > 0 then
 					log "preoperties after resize= "
-					properties
+					log properties
 					if DEBUG_LEVEL > 1 then
 						display dialog "set final position to (" & item 1 of wpos & ", " & item 2 of wpos & ")"
 					end if
@@ -282,7 +282,7 @@ on windowSize(pars)
 				
 				if DEBUG_LEVEL > 2 then
 					log "properties after = "
-					properties
+					log properties
 				end if
 			end tell
 			

@@ -26,26 +26,64 @@ on moveForMon(all)
 	set y_gtPs to y_gtTask + 50
 	set y_XRG to y_gtPs + 75
 	
-	-- app to be moved/resized when all = true
-	-- L/R: left/right monitor if there are multi monitors
-	set appL to {}
-	set appR to {}
-	set appLMax to {"Mail", "thunderbird", "thunderbird-bin", "firefox", "Google Chrome"}
-	set appRMax to {"iTerm"}
-	set appLHalf to {}
-	set appRHalf to {"Finder", "AdobeReader"}
+	-- app to be excepted
+	set expApp to {"XRG"}
 	
-	-- check if there is monitor in the left of main monitor
-	-- Sigle mode: Main monitor is Mac's monitor if there are no other monitors
-	-- Dual mode: Main monitor is external monitor, on the right of Mac
+	-- app to be half size, in left monitor (0.7 times full)
+	set halfSizeApp_L to {}
+	
+	-- app to be half size, in right monitor
+	set halfSizeApp_R to {"AdobeReader"}
+	
+	-- app only to be moved, in left monitor
+	set noResizeApp_L to {}
+	
+	-- app only to be moved, in right monitor
+	set noResizeApp_R to {"Finder", "Skype", "Microsoft Word", "Microsoft Excel", "Microsoft PowerPoint"}
+	
+	-- app to be moved left
+	set app_L to {"firefox", "Evernote", "thunderbird", "thunderbird-bin", "Mail"}
+	
+	-- app to be moved right
+	set app_R to {"iTerm"}
+	
+	
+	
+	-- get screen size
 	tell application "Finder"
-		set displayBounds to bounds of window of desktop
-		set dle to item 1 of displayBounds
+		set scriptPath to (path to me)'s folder as text
 	end tell
+	set windowSizeScpt to scriptPath & "windowSize.scpt"
+	set windowSize to load script file windowSizeScpt
+	
+	-- main screen
+	set svs to windowSize's getVisibleFrame(1, 1) --+1 is used to avoid edge, especially needed for y position
+	set dPosX to item 1 of svs
+	set dPosY to item 2 of svs
+	set dWidth to item 3 of svs
+	set dHeight to item 4 of svs
+	
+	-- try to get left screen
+	set dPosX_L to dPosX + 1
+	set dPosY_L to dPosY + 1
+	try
+		set svsL to windowSize's getVisibleFrame(-1, 1)
+		set dPosX_L to (item 1 of svsL) + 1
+		set dPosY_L to (item 2 of svsL) + 1
+	end try
+	
+	-- try to get right screen
+	set dPosX_R to dPosX
+	set dPosY_R to dPosY
+	try
+		set svsR to windowSize's getVisibleFrame(dPosX + dWidth + 1, 1)
+		set dPosX_R to (item 1 of svsR) + 1
+		set dPosY_R to (item 2 of svsR) + 1
+	end try
 	
 	-- move monitoring tools
 	tell application "System Events"
-		if dle < 0 then
+		if dPosX_L < 0 then
 			set ledge to ledgeDual
 		else
 			set ledge to ledgeSingle
@@ -102,39 +140,43 @@ on moveForMon(all)
 	end tell
 	
 	-- Move/Resize other windows
-	tell application "Finder"
-		set scriptPath to (path to me)'s folder as text
-	end tell
-	set windowSizeScpt to scriptPath & "windowSize.scpt"
-	set windowSize to load script file windowSizeScpt
 	if all then
-		if dle < 0 then
-			set lmon to {-1, 1}
-			set rmon to {1, 1}
-		else
-			set lmon to {1, 1}
-			set rmon to {1, 1}
-		end if
-		set appL to {}
-		set appR to {}
-		set appLMax to {"Mail", "thunderbird", "thunderbird-bin", "firefox", "Google Chrome"}
-		set appRMax to {"iTerm"}
-		set appLHalf to {}
-		set appRHalf to {"Finder", "AdobeReader"}
+		-- get application name
 		tell application "System Events"
-			repeat with a in appR
-				tell process appName
-					set nW to number of windows
-					repeat with i from 1 to nW
-						log i
-					end repeat
-				end tell
-			end repeat
+			set appList to (get name of every application process whose visible is true)
 		end tell
 		
+		-- repeat for all app
+		repeat with appName in appList
+			if appName is not in expApp then
+				tell application "System Events"
+					try
+						tell process appName
+							set nW to number of windows
+							repeat with i from 1 to nW
+								log appName & " " & i
+								if appName is in halfSizeApp_L then
+									windowSize's windowSize({appName:appName, windowNumber:i, monPosX:dPosX_L, monPosY:dPosY_L, xsize:0.7, ysize:0.7})
+								else if appName is in halfSizeApp_R then
+									windowSize's windowSize({appName:appName, windowNumber:i, monPosX:dPosX_R, monPosY:dPosY_R, xsize:0.7, ysize:0.7})
+								else if appName is in noResizeApp_L then
+									windowSize's windowSize({appName:appName, windowNumber:i, monPosX:dPosX_L, monPosY:dPosY_L, resize:0})
+								else if appName is in noResizeApp_R then
+									windowSize's windowSize({appName:appName, windowNumber:i, monPosX:dPosX_R, monPosY:dPosY_R, resize:0})
+								else if appName is in app_L then
+									windowSize's windowSize({appName:appName, windowNumber:i, monPosX:dPosX_L, monPosY:dPosY_L})
+								else if appName is in app_R then
+									windowSize's windowSize({appName:appName, windowNumber:i, monPosX:dPosX_R, monPosY:dPosY_R})
+								end if
+							end repeat
+						end tell
+					end try
+				end tell
+			end if
+		end repeat
 	end if
 end moveForMon
 
 on run
-	moveForMon(false)
+	moveForMon(true)
 end run
