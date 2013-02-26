@@ -1,4 +1,5 @@
 #!/bin/bash
+
 exclude=('.' '..' 'README.md' 'install.sh' 'osadeall.sh')
 instdir="$HOME/Library/Scripts"
 
@@ -8,6 +9,7 @@ dryrun=0
 newlink=()
 exist=()
 curdir=`pwd -P`
+
 # help
 HELP="Usage: $0 [-nd] [-b <backup file postfix>] [-e <exclude file>] [-i <installed dir>]
 
