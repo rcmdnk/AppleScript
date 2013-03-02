@@ -1,4 +1,5 @@
 #!/bin/bash
+
 exclude=('.' '..' 'README.md' 'install.sh' 'osadeall.sh')
 instdir="$HOME/Library/Scripts"
 
@@ -6,8 +7,10 @@ backup="bak"
 overwrite=1
 dryrun=0
 newlink=()
+updated=()
 exist=()
 curdir=`pwd -P`
+
 # help
 HELP="Usage: $0 [-nd] [-b <backup file postfix>] [-e <exclude file>] [-i <install dir>]
 
@@ -59,25 +62,47 @@ for f in *.applescript;do
   if [ $dryrun -eq 1 ];then
     install=0
   fi
+
+  tmpscpt=".${name}.tmp"
+  osacompile -o "$tmpscpt" "$curdir/$f"
+
   if [ "`ls "$instdir/$name" 2>/dev/null`" != "" ];then
-    exist=(${exist[@]} "$name")
-    if [ $dryrun -eq 1 ];then
-      echo -n ""
-    elif [ $overwrite -eq 0 ];then
-      install=0
-    elif [ "$backup" != "" ];then
-      mv "$instdir/$name" "$instdir/${name}.$backup"
+    diffret=$(diff $instdir/$name $tmpscpt)
+    if [ "$diffret" != "" ];then
+      updated=(${updated[@]} "$name")
+      if [ $dryrun -eq 1 ];then
+        echo -n ""
+      elif [ $overwrite -eq 0 ];then
+        install=0
+      elif [ "$backup" != "" ];then
+        mv "$instdir/$name" "$instdir/${name}.$backup"
+      else
+        rm "$instdir/$name"
+      fi
     else
-      rm "$instdir/$name"
+      exist=(${exist[@]} "$name")
+      install=0
     fi
   else
     newlink=(${newlink[@]} "$name")
   fi
   if [ $install -eq 1 ];then
-    osacompile -o "$instdir/$name" "$curdir/$f"
+    mv "$tmpscpt" "$instdir/$name"
   fi
+  rm -f "$tmpscpt"
 done
 echo ""
+if [ $dryrun -eq 1 ];then
+  echo "Following files have updates:"
+elif [ $overwrite -eq 0 ];then
+  echo "Following files have updates, but remained as is:"
+elif [ "$backup" != "" ];then
+  echo "Following files have updates, backups (*.$backup) were made:"
+else
+  echo "Following files have updates, replaced old one:"
+fi
+echo "  ${updated[@]}"
+echo
 if [ $dryrun -eq 1 ];then
   echo "Following files don't exist:"
 else
@@ -85,15 +110,6 @@ else
 fi
 echo "  ${newlink[@]}"
 echo
-echo -n "Following files existed"
-if [ $dryrun -eq 1 ];then
-  echo "Following files exist:"
-elif [ $overwrite -eq 0 ];then
-  echo "Following files exist, remained as is:"
-elif [ "$backup" != "" ];then
-  echo "Following files existed, backups (*.$backup) were made:"
-else
-  echo "Following files existed, replaced old one:"
-fi
+echo -n "Following files exist and have no updaets"
 echo "  ${exist[@]}"
 echo

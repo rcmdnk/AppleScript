@@ -7,6 +7,7 @@ backup="bak"
 overwrite=1
 dryrun=0
 newlink=()
+updated=()
 exist=()
 curdir=`pwd -P`
 
@@ -62,37 +63,59 @@ for scpt in $instdir/*.scpt;do
   if [ $dryrun -eq 1 ];then
     install=0
   fi
-  if [ "`ls "$curdir/$name" 2>/dev/null`" != "" ];then
-    exist=(${exist[@]} "$name")
-    if [ $dryrun -eq 1 ];then
-      echo -n ""
-    elif [ $overwrite -eq 0 ];then
-      install=0
-    elif [ "$backup" != "" ];then
-      mv "$curdir/$name" "$curdir/${name}.$backup"
+
+  tmpscript=.${name}.tmp
+  osadecompile $scpt > $tmpscript
+  while [ 1 ];do
+    if [ "`tail -n1 $tmpscript`" = "" ];then
+      # Mac's sed need zero-length extension after -i not to make backup
+      # but it is not recommended
+      # It isn't necessary in Linux...
+      #sed -i '' -e '$d' $tmpscript
+      sed -e '$d' $tmpscript > ${tmpscript}.tmp
+      mv ${tmpscript}.tmp $tmpscript
     else
-      rm "$curdir/$name"
+      break
+    fi
+  done
+
+  if [ "`ls "$curdir/$name" 2>/dev/null`" != "" ];then
+    diffret=$(diff $curdir/$name $tmpscript)
+    if [ "$diffret" != "" ];then
+      updated=(${updated[@]} "$name")
+      if [ $dryrun -eq 1 ];then
+        :
+      elif [ $overwrite -eq 0 ];then
+        install=0
+      elif [ "$backup" != "" ];then
+        mv "$curdir/$name" "$curdir/${name}.$backup"
+      else
+        rm "$curdir/$name"
+      fi
+    else
+      exist=(${exist[@]} "$name")
+      install=0
     fi
   else
     newlink=(${newlink[@]} "$name")
   fi
   if [ $install -eq 1 ];then
-    osadecompile $scpt > $name
-    while [ 1 ];do
-      if [ "`tail -n1 $name`" = "" ];then
-        # Mac's sed need zero-length extension after -i not to make backup
-        # but it is not recommended
-        # It isn't necessary in Linux...
-        #sed -i '' -e '$d' $name
-        sed -e '$d' $name > $name.tmp
-        mv $name.tmp $name
-      else
-        break
-      fi
-    done
+    mv "$tmpscript" "$name"
   fi
+  rm -f "$tmpscript"
 done
 echo ""
+if [ $dryrun -eq 1 ];then
+  echo "Following files have updates:"
+elif [ $overwrite -eq 0 ];then
+  echo "Following files have updates, but remained as is:"
+elif [ "$backup" != "" ];then
+  echo "Following files have updates, backups (*.$backup) were made:"
+else
+  echo "Following files have updates, replaced old one:"
+fi
+echo "  ${updated[@]}"
+echo
 if [ $dryrun -eq 1 ];then
   echo "Following files don't exist:"
 else
@@ -100,15 +123,6 @@ else
 fi
 echo "  ${newlink[@]}"
 echo
-echo -n "Following files existed"
-if [ $dryrun -eq 1 ];then
-  echo "Following files exist:"
-elif [ $overwrite -eq 0 ];then
-  echo "Following files exist, remained as is:"
-elif [ "$backup" != "" ];then
-  echo "Following files existed, backups (*.$backup) were made:"
-else
-  echo "Following files existed, replaced old one:"
-fi
+echo -n "Following files exist and have no updaets"
 echo "  ${exist[@]}"
 echo
