@@ -1,4 +1,4 @@
-property DEBUG_LEVEL : 0
+property DEBUG_LEVEL : 1
 
 property DEF_LEFT_MARGIN : 10
 property DEF_RIGHT_MARGIN : 10

@@ -1,4 +1,13 @@
+property DEBUG_LEVEL : 1
+
 on moveForMon(all)
+	-- debug mode
+	if DEBUG_LEVEL > 0 then
+		log "debug mode = " & DEBUG_LEVEL
+		if DEBUG_LEVEL > 1 then
+			display dialog "debug mode = " & DEBUG_LEVEL
+		end if
+	end if
 	
 	-- set monitoring tools' positions
 	-- SimpleFloatingClock
@@ -47,8 +56,6 @@ on moveForMon(all)
 	-- app to be moved right
 	set app_R to {"iTerm"}
 	
-	
-	
 	-- get screen size
 	tell application "Finder"
 		set scriptPath to (path to me)'s folder as text
@@ -82,13 +89,19 @@ on moveForMon(all)
 	end try
 	
 	-- move monitoring tools
-	tell application "System Events"
-		if dPosX_L < 0 then
-			set ledge to ledgeDual
-		else
-			set ledge to ledgeSingle
+	if dPosX_L < 0 then
+		set ledge to ledgeDual
+		if DEBUG_LEVEL > 0 then
+			log "ledge to ledgeDual"
 		end if
-		
+	else
+		set ledge to ledgeSingle
+		if DEBUG_LEVEL > 0 then
+			log "ledge to ledgeSingle"
+		end if
+	end if
+	
+	tell application "System Events"
 		-- SimpleFloatingClock
 		try
 			set appName to "SimpleFloatingClock"
@@ -106,25 +119,33 @@ on moveForMon(all)
 		
 		-- GeekTool
 		try
+			log ledge & y_gtCal
+			log ledge & y_gtGcal
+			log ledge & y_gtTask
+			log ledge & y_gtPs
 			set appName to "GeekTool"
 			tell process appName
+				set nW to number of windows
+				--display dialog appName & " in process, nWindows=" & nW
 				tell window w_gtCal
-					set size to {1000, 1000}
+					-- set size to {1000, 1000}
 					set position to {ledge, y_gtCal}
 				end tell
 				tell window w_gtGcal
-					set size to {1000, 1000}
+					-- set size to {1000, 1000}
 					set position to {ledge, y_gtGcal}
 				end tell
 				tell window w_gtTask
-					set size to {1000, 1000}
+					-- set size to {1000, 1000}
 					set position to {ledge, y_gtTask}
 				end tell
 				tell window w_gtPs
-					set size to {1000, 1000}
+					-- set size to {1000, 1000}
 					set position to {ledge, y_gtPs}
 				end tell
 			end tell
+			--on error errMsg
+			--	display dialog "ERROR: " & errMsg
 		end try
 		
 		-- XRG
@@ -178,5 +199,5 @@ on moveForMon(all)
 end moveForMon
 
 on run
-	moveForMon(true)
+	moveForMon(false)
 end run

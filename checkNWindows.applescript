@@ -1,13 +1,14 @@
-
+set appName to ""
 
 --get application name of frontmost 
-
-tell application "System Events"
-	set pList to name of every process whose frontmost is true
-	set appName to item 1 of pList
-	display dialog appName
-	set allp to properties of every process whose frontmost is true
-end tell
+if appName is "" then
+	tell application "System Events"
+		set pList to name of every process whose frontmost is true
+		set appName to item 1 of pList
+		display dialog appName
+		set allp to properties of every process whose frontmost is true
+	end tell
+end if
 
 tell application "System Events"
 	try
