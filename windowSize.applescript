@@ -8,9 +8,9 @@ property DEF_BOTTOM_MARGIN : 10
 property GEEKTOOL_WINDOW : 1
 property GEEKTOOL_MARGIN : 10
 
--- window size main function
+-- Window size main function
 on windowSize(pars)
-	-- debug mode
+	-- Debug mode
 	if DEBUG_LEVEL > 0 then
 		log "debug mode = " & DEBUG_LEVEL
 		if DEBUG_LEVEL > 1 then
@@ -18,7 +18,7 @@ on windowSize(pars)
 		end if
 	end if
 	
-	-- set Parameters
+	-- Set Parameters
 	set {xsize, ysize, xpos, ypos, leftmargin, rightmargin, topmargin, bottommargin, appName, windowNumber, monPosX, monPosY, resize} to {1, 1, 0, 0, DEF_LEFT_MARGIN, DEF_RIGHT_MARGIN, DEF_TOP_MARGIN, DEF_BOTTOM_MARGIN, "", "", "", "", 1}
 	try
 		set xsize to xsize of pars
@@ -60,7 +60,7 @@ on windowSize(pars)
 		set resize to resize of pars
 	end try
 	
-	-- get application name and window number, if appName is "", if windowNumber is not set, set 1
+	-- Get application name and window number, if appName is "", if windowNumber is not set, set 1
 	if appName is "" then
 		tell application "System Events"
 			set pList to name of every process whose frontmost is true
@@ -80,7 +80,7 @@ on windowSize(pars)
 		end if
 	end if
 	
-	-- first, move monitoring applications to correct places, if available
+	-- First, move monitoring applications to correct places, if available
 	try
 		tell application "Finder"
 			set scriptPath to (path to me)'s folder as text
@@ -90,7 +90,7 @@ on windowSize(pars)
 		moveForMon's moveForMon(false)
 	end try
 	
-	-- get window position
+	-- Get window position
 	tell application "System Events"
 		tell process appName
 			try
@@ -118,7 +118,7 @@ on windowSize(pars)
 		end tell
 	end tell
 	
-	-- get screen (display) size
+	-- Get screen (display) size
 	if monPosX is not "" and monPosY is not "" then
 		set svs to getVisibleFrame(monPosX, monPosY)
 		set dPosX to item 1 of svs
@@ -156,43 +156,46 @@ on windowSize(pars)
 		end if
 	end if
 	
-	-- get GeekTool's position
-	tell application "System Events"
-		try
-			tell process "GeekTool"
-				set topWindow to window GEEKTOOL_WINDOW
-				set gtPos to position of topWindow
-			end tell
-			set gtflag to 1
-		on error
-			set gtflag to 0
-		end try
-	end tell
+	-- Get GeekTool's position
+	--tell application "System Events"
+	--	try
+	--		tell process "GeekTool"
+	--			set topWindow to window GEEKTOOL_WINDOW
+	--			set gtPos to position of topWindow
+	--		end tell
+	--		set gtflag to 1
+	--	on error
+	--		set gtflag to 0
+	--	end try
+	--end tell
 	
-	-- check if the window and GeekTool are in same screen
-	if gtflag is 1 then
-		set gtsvs to getVisibleFrame(item 1 of gtPos, item 2 of gtPos)
-		set gtdPosX to item 1 of gtsvs
-		set gtdPosY to item 2 of gtsvs
-		if dPosX is gtdPosX and dPosY is gtdPosY then
-			try
-				set gtSize to size of topWindow
-				set geekToolWidth to item 1 of gtSize
-				set geekToolWidth to geekToolWidth + GEEKTOOL_MARGIN -- additional margin
-			on error
-				set geekToolWidth to 0
-			end try
-		else
-			set geekToolWidth to 0
-		end if
+	-- Check if the window and GeekTool are in same screen
+	--if gtflag is 1 then
+	--	set gtsvs to getVisibleFrame(item 1 of gtPos, item 2 of gtPos)
+	--	set gtdPosX to item 1 of gtsvs
+	--	set gtdPosY to item 2 of gtsvs
+	--	if dPosX is gtdPosX and dPosY is gtdPosY then
+	--		try
+	--			set gtSize to size of topWindow
+	--			set geekToolWidth to item 1 of gtSize
+	--			set geekToolWidth to geekToolWidth + GEEKTOOL_MARGIN -- additional margin
+	--		on error
+	--			set geekToolWidth to 0
+	--		end try
+	--	else
+	--		set geekToolWidth to 0
+	--	end if
+	if item 1 of winPos < 0 then
+		set geekToolWidth to 160
+		set geekToolWidth to geekToolWidth + GEEKTOOL_MARGIN -- additional margin
 	else
 		set geekToolWidth to 0
 	end if
 	
-	-- subtract geekToolWidth from display width
+	-- Subtract geekToolWidth from display width
 	set dWidth to dWidth - geekToolWidth
 	
-	-- resize/move
+	-- Resize/move
 	tell application "System Events"
 		tell process appName
 			try
@@ -200,7 +203,7 @@ on windowSize(pars)
 			on error
 				set topWindow to window windowNumber
 			end try
-			-- set screen size w/o margins
+			-- Set screen size w/o margins
 			--set useSize to {dWidth - leftmargin - rightmargin, dHeight - topmargin - bottommargin}
 			--if DEBUG_LEVEL > 0 then
 			--	log "useSize(" & item 1 of useSize & ", " & item 2 of useSize & ")"
@@ -208,11 +211,11 @@ on windowSize(pars)
 			--		display dialog "useSize(" & item 1 of useSize & ", " & item 2 of useSize & ")"
 			--	end if
 			--end if
-			-- no margin w/o edges of screen
+			-- No margin w/o edges of screen
 			--set wpos to {dPosX + leftmargin + xpos * (item 1 of useSize), dPosY + topmargin + ypos * (item 2 of useSize)}
 			--set wsize to {xsize * (item 1 of useSize), ysize * (item 2 of useSize)}
 			
-			-- set margin in any place
+			-- Set margin in any place
 			set wpos to {dPosX + leftmargin + xpos * dWidth, dPosY + topmargin + ypos * dHeight}
 			set wsize to {xsize * dWidth - leftmargin - rightmargin, ysize * dHeight - topmargin - bottommargin}
 			
@@ -253,7 +256,7 @@ on windowSize(pars)
 				if resize is 1 then
 					set size to wsize
 				end if
-				-- this shows an error for iTerm!
+				-- This shows an error for iTerm!
 				-- maybe properties is changed when set size…???
 				--if DEBUG_LEVEL > 0 then
 				--	log "preoperties after resize= "
@@ -290,7 +293,7 @@ on windowSize(pars)
 	end tell
 end windowSize
 
--- function to get visible frame (w/o menu bar, dock)
+-- Function to get visible frame (w/o menu bar, dock)
 on getVisibleFrame(x, y)
 	set cocoaScript to "require 'osx/cocoa'; 
 x = (ARGV[1].to_i);
