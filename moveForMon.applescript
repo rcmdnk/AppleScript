@@ -123,7 +123,9 @@ on moveForMon(all)
 			log ledge & y_gtGcal
 			log ledge & y_gtTask
 			log ledge & y_gtPs
-			set appName to "GeekTool"
+			--set appName to "GeekTool"
+			set appName to "GeekTool Helper" -- for GeekTool 3
+			
 			tell process appName
 				set nW to number of windows
 				--display dialog appName & " in process, nWindows=" & nW

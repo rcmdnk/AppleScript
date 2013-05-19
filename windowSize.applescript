@@ -157,40 +157,41 @@ on windowSize(pars)
 	end if
 	
 	-- Get GeekTool's position
-	--tell application "System Events"
-	--	try
-	--		tell process "GeekTool"
-	--			set topWindow to window GEEKTOOL_WINDOW
-	--			set gtPos to position of topWindow
-	--		end tell
-	--		set gtflag to 1
-	--	on error
-	--		set gtflag to 0
-	--	end try
-	--end tell
+	tell application "System Events"
+		try
+			tell process "GeekTool Helper"
+				set topWindow to window GEEKTOOL_WINDOW
+				set gtPos to position of topWindow
+			end tell
+			set gtflag to 1
+		on error
+			set gtflag to 0
+		end try
+	end tell
 	
 	-- Check if the window and GeekTool are in same screen
-	--if gtflag is 1 then
-	--	set gtsvs to getVisibleFrame(item 1 of gtPos, item 2 of gtPos)
-	--	set gtdPosX to item 1 of gtsvs
-	--	set gtdPosY to item 2 of gtsvs
-	--	if dPosX is gtdPosX and dPosY is gtdPosY then
-	--		try
-	--			set gtSize to size of topWindow
-	--			set geekToolWidth to item 1 of gtSize
-	--			set geekToolWidth to geekToolWidth + GEEKTOOL_MARGIN -- additional margin
-	--		on error
-	--			set geekToolWidth to 0
-	--		end try
-	--	else
-	--		set geekToolWidth to 0
-	--	end if
-	if item 1 of winPos < 0 then
-		set geekToolWidth to 160
-		set geekToolWidth to geekToolWidth + GEEKTOOL_MARGIN -- additional margin
-	else
-		set geekToolWidth to 0
+	if gtflag is 1 then
+		set gtsvs to getVisibleFrame(item 1 of gtPos, item 2 of gtPos)
+		set gtdPosX to item 1 of gtsvs
+		set gtdPosY to item 2 of gtsvs
+		if dPosX is gtdPosX and dPosY is gtdPosY then
+			try
+				set gtSize to size of topWindow
+				set geekToolWidth to item 1 of gtSize
+				set geekToolWidth to geekToolWidth + GEEKTOOL_MARGIN -- additional margin
+			on error
+				set geekToolWidth to 0
+			end try
+		else
+			set geekToolWidth to 0
+		end if
 	end if
+	--if item 1 of winPos < 0 then
+	--	set geekToolWidth to 160
+	--	set geekToolWidth to geekToolWidth + GEEKTOOL_MARGIN -- additional margin
+	--else
+	--	set geekToolWidth to 0
+	--end if
 	
 	-- Subtract geekToolWidth from display width
 	set dWidth to dWidth - geekToolWidth
