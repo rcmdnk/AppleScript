@@ -1,4 +1,4 @@
-set appName to ""
+set appName to "GeekTool Helper"
 
 --get application name of frontmost 
 if appName is "" then
