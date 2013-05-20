@@ -1,4 +1,4 @@
-property DEBUG_LEVEL : 1
+property DEBUG_LEVEL : 0
 
 property DEF_LEFT_MARGIN : 10
 property DEF_RIGHT_MARGIN : 10
@@ -75,7 +75,7 @@ on windowSize(pars)
 	
 	if DEBUG_LEVEL > 0 then
 		log "windowSize(" & xsize & ", " & ysize & ", " & xpos & ", " & ypos & ", " & leftmargin & ", " & rightmargin & ", " & topmargin & ", " & bottommargin & ", " & appName & ", " & windowNumber & ", " & monPosX & ", " & monPosY & "," & resize & ")"
-		if DEBUG_LEVEL > 1 then
+		if DEBUG_LEVEL > 5 then
 			display dialog "windowSize(" & xsize & ", " & ysize & ", " & xpos & ", " & ypos & ", " & leftmargin & ", " & rightmargin & ", " & topmargin & ", " & bottommargin & ", " & appName & ", " & windowNumber & ", " & monPosX & ", " & monPosY & "," & resize & ")"
 		end if
 	end if
@@ -110,7 +110,7 @@ on windowSize(pars)
 			if DEBUG_LEVEL > 0 then
 				log "winPos(" & winPosX & ", " & winPosY & ")"
 				log "winSize(" & winSizeX & ", " & winSizeY & ")"
-				if DEBUG_LEVEL > 1 then
+				if DEBUG_LEVEL > 5 then
 					display dialog "winPos(" & winPosX & ", " & winPosY & ")"
 					display dialog "winSize(" & winSizeX & ", " & winSizeY & ")"
 				end if
@@ -151,7 +151,7 @@ on windowSize(pars)
 	set dHeight to item 4 of svs
 	if DEBUG_LEVEL > 0 then
 		log "svs(" & dPosX & ", " & dPosY & ", " & dWidth & ", " & dHeight & ")"
-		if DEBUG_LEVEL > 1 then
+		if DEBUG_LEVEL > 5 then
 			display dialog "svs(" & dPosX & ", " & dPosY & ", " & dWidth & ", " & dHeight & ")"
 		end if
 	end if
@@ -208,7 +208,7 @@ on windowSize(pars)
 			--set useSize to {dWidth - leftmargin - rightmargin, dHeight - topmargin - bottommargin}
 			--if DEBUG_LEVEL > 0 then
 			--	log "useSize(" & item 1 of useSize & ", " & item 2 of useSize & ")"
-			--	if DEBUG_LEVEL > 1 then
+			--	if DEBUG_LEVEL > 5 then
 			--		display dialog "useSize(" & item 1 of useSize & ", " & item 2 of useSize & ")"
 			--	end if
 			--end if
@@ -223,7 +223,7 @@ on windowSize(pars)
 			if DEBUG_LEVEL > 0 then
 				log "wpos(" & item 1 of wpos & ", " & item 2 of wpos & ")"
 				log "wsize(" & item 1 of wsize & ", " & item 2 of wsize & ")"
-				if DEBUG_LEVEL > 1 then
+				if DEBUG_LEVEL > 5 then
 					display dialog "wpos(" & item 1 of wpos & ", " & item 2 of wpos & ")"
 					display dialog "wsize(" & item 1 of wsize & ", " & item 2 of wsize & ")"
 				end if
@@ -233,60 +233,18 @@ on windowSize(pars)
 					log "preoperties before= "
 					log properties
 				end if
-				set winSize to size
-				if item 1 of winSize > dWidth or item 2 of winSize > dHeight then
-					if DEBUG_LEVEL > 1 then
-						display dialog "Curent size is larger than window size!"
-					end if
-					set position to {dPosX - ((item 1 of wpos) + (item 1 of wsize) - dWidth), dPosY - ((item 2 of wpos) + (item 2 of wsize) - dHeight)}
-				else if (item 1 of wpos) + (item 1 of winSize) > dWidth or (item 2 of wpos) + (item 2 of winSize) > dHeight then
-					if DEBUG_LEVEL > 1 then
-						display dialog "Curent size is larger than window-windowpos!"
-					end if
-					set position to {dPosX, dPosY}
-				else
-					set position to wpos
-				end if
-				if DEBUG_LEVEL > 0 then
-					log "preoperties after position change= "
-					log properties
-					if DEBUG_LEVEL > 1 then
-						display dialog "set size"
-					end if
-				end if
+				set position to wpos
 				if resize is 1 then
 					set size to wsize
-				end if
-				-- This shows an error for iTerm!
-				-- maybe properties is changed when set size…???
-				--if DEBUG_LEVEL > 0 then
-				--	log "preoperties after resize= "
-				--	properties
-				--	if DEBUG_LEVEL > 1 then
-				--		display dialog "set final position"
-				--	end if
-				--end if
-				
-				--end tell
-				--try
-				--	set topWindow to item windowNumber of (every window whose focused is true)
-				--on error
-				--	set topWindow to window windowNumber
-				--end try
-				--tell topWindow
-				
-				if DEBUG_LEVEL > 0 then
-					log "preoperties after resize= "
-					log properties
-					if DEBUG_LEVEL > 1 then
-						display dialog "set final position to (" & item 1 of wpos & ", " & item 2 of wpos & ")"
+					-- When the original height is larger than the display size,
+					-- the resize couldn't work well.
+					-- Need to resize lower edge to internal of the display ({1,1})
+					-- then resize to target size. 
+					set winSize to size
+					if item 1 of winSize > item 1 of wsize or item 2 of winSize > item 2 of wsize then
+						set size to {1, 1}
+						set size to wsize
 					end if
-				end if
-				set position to wpos
-				
-				if DEBUG_LEVEL > 2 then
-					log "properties after = "
-					log properties
 				end if
 			end tell
 			
