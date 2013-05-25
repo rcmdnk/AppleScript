@@ -1,11 +1,21 @@
-property DEBUG_LEVEL : 1
+property DEF_ALL : false
+property DEF_DEBUG_LEVEL : 1
 
-on moveForMon(all)
+on moveForMon(pars)
+	
+	set {all, debug_devel} to {DEF_ALL, DEF_DEBUG_LEVEL}
+	try
+		set all to all of pars
+	end try
+	try
+		set debug_devel to debug_devel of pars
+	end try
+	
 	-- debug mode
-	if DEBUG_LEVEL > 0 then
-		log "debug mode = " & DEBUG_LEVEL
-		if DEBUG_LEVEL > 1 then
-			display dialog "debug mode = " & DEBUG_LEVEL
+	if debug_level > 0 then
+		log "debug mode = " & debug_level
+		if debug_level > 1 then
+			display dialog "debug mode = " & debug_level
 		end if
 	end if
 	
@@ -91,12 +101,12 @@ on moveForMon(all)
 	-- move monitoring tools
 	if dPosX_L < 0 then
 		set ledge to ledgeDual
-		if DEBUG_LEVEL > 0 then
+		if debug_level > 0 then
 			log "ledge to ledgeDual"
 		end if
 	else
 		set ledge to ledgeSingle
-		if DEBUG_LEVEL > 0 then
+		if debug_level > 0 then
 			log "ledge to ledgeSingle"
 		end if
 	end if
@@ -201,5 +211,5 @@ on moveForMon(all)
 end moveForMon
 
 on run
-	moveForMon(false)
+	moveForMon({all:false})
 end run
