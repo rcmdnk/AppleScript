@@ -3,5 +3,4 @@ tell application "Finder"
 end tell
 set windowSizeScpt to scriptPath & "windowSize.scpt"
 set windowSize to load script file windowSizeScpt
-set pars to {}
-windowSize's windowSize(pars)
+windowSize's windowSize({})

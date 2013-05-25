@@ -1,25 +1,28 @@
-property DEBUG_LEVEL : 0
+property DEF_XSIZE : 1
+property DEF_YSIZE : 1
+property DEF_XPOS : 0
+property DEF_YPOS : 0
 
 property DEF_LEFT_MARGIN : 10
 property DEF_RIGHT_MARGIN : 10
 property DEF_TOP_MARGIN : 10
 property DEF_BOTTOM_MARGIN : 10
 
+property DEF_APPNAME : ""
+property DEF_WINDOWNUMBER : ""
+property DEF_MONPOSX : ""
+property DEF_MONPOSY : ""
+property DEF_RESIZE : 1
+
+property DEF_DEBUG_LEVEL : 0
+
 property GEEKTOOL_WINDOW : 1
 property GEEKTOOL_MARGIN : 10
 
 -- Window size main function
 on windowSize(pars)
-	-- Debug mode
-	if DEBUG_LEVEL > 0 then
-		log "debug mode = " & DEBUG_LEVEL
-		if DEBUG_LEVEL > 1 then
-			display dialog "debug mode = " & DEBUG_LEVEL
-		end if
-	end if
-	
 	-- Set Parameters
-	set {xsize, ysize, xpos, ypos, leftmargin, rightmargin, topmargin, bottommargin, appName, windowNumber, monPosX, monPosY, resize} to {1, 1, 0, 0, DEF_LEFT_MARGIN, DEF_RIGHT_MARGIN, DEF_TOP_MARGIN, DEF_BOTTOM_MARGIN, "", "", "", "", 1}
+	set {xsize, ysize, xpos, ypos, leftmargin, rightmargin, topmargin, bottommargin, appName, windowNumber, monPosX, monPosY, resize, debug_level} to {DEF_XSIZE, DEF_YSIZE, DEF_XPOS, DEF_YPOS, DEF_LEFT_MARGIN, DEF_RIGHT_MARGIN, DEF_TOP_MARGIN, DEF_BOTTOM_MARGIN, DEF_APPNAME, DEF_WINDOWNUMBER, DEF_MONPOSX, DEF_MONPOSY, DEF_RESIZE, DEF_DEBUG_LEVEL}
 	try
 		set xsize to xsize of pars
 	end try
@@ -59,6 +62,17 @@ on windowSize(pars)
 	try
 		set resize to resize of pars
 	end try
+	try
+		set debug_level to debug_level of pars
+	end try
+	
+	-- Debug mode
+	if debug_level > 0 then
+		log "debug mode = " & debug_level
+		if debug_level > 1 then
+			display dialog "debug mode = " & debug_level
+		end if
+	end if
 	
 	-- Get application name and window number, if appName is "", if windowNumber is not set, set 1
 	if appName is "" then
@@ -73,10 +87,10 @@ on windowSize(pars)
 	
 	
 	
-	if DEBUG_LEVEL > 0 then
-		log "windowSize(" & xsize & ", " & ysize & ", " & xpos & ", " & ypos & ", " & leftmargin & ", " & rightmargin & ", " & topmargin & ", " & bottommargin & ", " & appName & ", " & windowNumber & ", " & monPosX & ", " & monPosY & "," & resize & ")"
-		if DEBUG_LEVEL > 5 then
-			display dialog "windowSize(" & xsize & ", " & ysize & ", " & xpos & ", " & ypos & ", " & leftmargin & ", " & rightmargin & ", " & topmargin & ", " & bottommargin & ", " & appName & ", " & windowNumber & ", " & monPosX & ", " & monPosY & "," & resize & ")"
+	if debug_level > 0 then
+		log "windowSize(" & xsize & ", " & ysize & ", " & xpos & ", " & ypos & ", " & leftmargin & ", " & rightmargin & ", " & topmargin & ", " & bottommargin & ", " & appName & ", " & windowNumber & ", " & monPosX & ", " & monPosY & "," & resize & "," & debug_level & ")"
+		if debug_level > 5 then
+			display dialog "windowSize(" & xsize & ", " & ysize & ", " & xpos & ", " & ypos & ", " & leftmargin & ", " & rightmargin & ", " & topmargin & ", " & bottommargin & ", " & appName & ", " & windowNumber & ", " & monPosX & ", " & monPosY & "," & resize & "," & debug_level & ")"
 		end if
 	end if
 	
@@ -87,7 +101,7 @@ on windowSize(pars)
 		end tell
 		set moveForMonScpt to scriptPath & "moveForMon.scpt"
 		set moveForMon to load script file moveForMonScpt
-		moveForMon's moveForMon(false)
+		moveForMon's moveForMon({all:false})
 	end try
 	
 	-- Get window position
@@ -107,10 +121,10 @@ on windowSize(pars)
 			set winPosRT to {winPosX + winSizeX, winPosY}
 			set winPosLB to {winPosX, winPosY + winSizeY}
 			set winPosRB to {winPosX + winSizeX, winPosY + winSizeY}
-			if DEBUG_LEVEL > 0 then
+			if debug_level > 0 then
 				log "winPos(" & winPosX & ", " & winPosY & ")"
 				log "winSize(" & winSizeX & ", " & winSizeY & ")"
-				if DEBUG_LEVEL > 5 then
+				if debug_level > 5 then
 					display dialog "winPos(" & winPosX & ", " & winPosY & ")"
 					display dialog "winSize(" & winSizeX & ", " & winSizeY & ")"
 				end if
@@ -122,6 +136,7 @@ on windowSize(pars)
 	if monPosX is not "" and monPosY is not "" then
 		set svs to getVisibleFrame(monPosX, monPosY)
 		set dPosX to item 1 of svs
+		
 	else
 		try
 			set svs to getVisibleFrame(item 1 of winPos, item 2 of winPos)
@@ -149,9 +164,9 @@ on windowSize(pars)
 	set dPosY to item 2 of svs
 	set dWidth to item 3 of svs
 	set dHeight to item 4 of svs
-	if DEBUG_LEVEL > 0 then
+	if debug_level > 0 then
 		log "svs(" & dPosX & ", " & dPosY & ", " & dWidth & ", " & dHeight & ")"
-		if DEBUG_LEVEL > 5 then
+		if debug_level > 5 then
 			display dialog "svs(" & dPosX & ", " & dPosY & ", " & dWidth & ", " & dHeight & ")"
 		end if
 	end if
@@ -206,9 +221,9 @@ on windowSize(pars)
 			end try
 			-- Set screen size w/o margins
 			--set useSize to {dWidth - leftmargin - rightmargin, dHeight - topmargin - bottommargin}
-			--if DEBUG_LEVEL > 0 then
+			--if debug_level > 0 then
 			--	log "useSize(" & item 1 of useSize & ", " & item 2 of useSize & ")"
-			--	if DEBUG_LEVEL > 5 then
+			--	if debug_level > 5 then
 			--		display dialog "useSize(" & item 1 of useSize & ", " & item 2 of useSize & ")"
 			--	end if
 			--end if
@@ -220,16 +235,16 @@ on windowSize(pars)
 			set wpos to {dPosX + leftmargin + xpos * dWidth, dPosY + topmargin + ypos * dHeight}
 			set wsize to {xsize * dWidth - leftmargin - rightmargin, ysize * dHeight - topmargin - bottommargin}
 			
-			if DEBUG_LEVEL > 0 then
+			if debug_level > 0 then
 				log "wpos(" & item 1 of wpos & ", " & item 2 of wpos & ")"
 				log "wsize(" & item 1 of wsize & ", " & item 2 of wsize & ")"
-				if DEBUG_LEVEL > 5 then
+				if debug_level > 5 then
 					display dialog "wpos(" & item 1 of wpos & ", " & item 2 of wpos & ")"
 					display dialog "wsize(" & item 1 of wsize & ", " & item 2 of wsize & ")"
 				end if
 			end if
 			tell topWindow
-				if DEBUG_LEVEL > 0 then
+				if debug_level > 0 then
 					log "preoperties before= "
 					log properties
 				end if
