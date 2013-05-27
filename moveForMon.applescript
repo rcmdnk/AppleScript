@@ -3,7 +3,7 @@ property DEF_DEBUG_LEVEL : 1
 
 on moveForMon(pars)
 	
-	set {all, debug_devel} to {DEF_ALL, DEF_DEBUG_LEVEL}
+	set {all, debug_level} to {DEF_ALL, DEF_DEBUG_LEVEL}
 	try
 		set all to all of pars
 	end try
