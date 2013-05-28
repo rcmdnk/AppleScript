@@ -1,5 +1,5 @@
-property DEF_ALL : false
-property DEF_DEBUG_LEVEL : 1
+property DEF_ALL : true
+property DEF_DEBUG_LEVEL : 0
 
 on moveForMon(pars)
 	
@@ -8,7 +8,7 @@ on moveForMon(pars)
 		set all to all of pars
 	end try
 	try
-		set debug_devel to debug_devel of pars
+		set debug_level to debug_level of pars
 	end try
 	
 	-- debug mode
@@ -51,7 +51,7 @@ on moveForMon(pars)
 	-- app to be half size, in left monitor (0.7 times full)
 	set halfSizeApp_L to {}
 	
-	-- app to be half size, in right monitor
+	-- app to be half size, in right monitor (0.7 times full)
 	set halfSizeApp_R to {"AdobeReader"}
 	
 	-- app only to be moved, in left monitor
@@ -129,10 +129,6 @@ on moveForMon(pars)
 		
 		-- GeekTool
 		try
-			log ledge & y_gtCal
-			log ledge & y_gtGcal
-			log ledge & y_gtTask
-			log ledge & y_gtPs
 			--set appName to "GeekTool"
 			set appName to "GeekTool Helper" -- for GeekTool 3
 			
@@ -187,19 +183,60 @@ on moveForMon(pars)
 						tell process appName
 							set nW to number of windows
 							repeat with i from 1 to nW
-								log appName & " " & i
+								if debug_level > 0 then
+									log appName & " " & i
+									if debug_level > 1 then
+										display dialog appName & " " & i
+									end if
+								end if
 								if appName is in halfSizeApp_L then
-									windowSize's windowSize({appName:appName, windowNumber:i, monPosX:dPosX_L, monPosY:dPosY_L, xsize:0.7, ysize:0.7})
+									if debug_level > 0 then
+										log "half size left"
+										if debug_level > 1 then
+											display dialog "half size left"
+										end if
+									end if
+									windowSize's windowSize({appName:appName, windowNumber:i, monPosX:dPosX_L, monPosY:dPosY_L, xsize:0.7, ysize:0.7, moveForMon:false, debug_level:debug_level})
 								else if appName is in halfSizeApp_R then
-									windowSize's windowSize({appName:appName, windowNumber:i, monPosX:dPosX_R, monPosY:dPosY_R, xsize:0.7, ysize:0.7})
+									if debug_level > 0 then
+										log "half size right"
+										if debug_level > 1 then
+											display dialog "half size right"
+										end if
+									end if
+									windowSize's windowSize({appName:appName, windowNumber:i, monPosX:dPosX_R, monPosY:dPosY_R, xsize:0.7, ysize:0.7, moveForMon:false, debug_level:debug_level})
 								else if appName is in noResizeApp_L then
-									windowSize's windowSize({appName:appName, windowNumber:i, monPosX:dPosX_L, monPosY:dPosY_L, resize:0})
+									if debug_level > 0 then
+										log "half size left"
+										if debug_level > 1 then
+											display dialog "half size left"
+										end if
+									end if
+									windowSize's windowSize({appName:appName, windowNumber:i, monPosX:dPosX_L, monPosY:dPosY_L, resize:0, moveForMon:false, debug_level:debug_level})
 								else if appName is in noResizeApp_R then
-									windowSize's windowSize({appName:appName, windowNumber:i, monPosX:dPosX_R, monPosY:dPosY_R, resize:0})
+									if debug_level > 0 then
+										log "move right"
+										if debug_level > 1 then
+											display dialog "move right"
+										end if
+									end if
+									windowSize's windowSize({appName:appName, windowNumber:i, monPosX:dPosX_R, monPosY:dPosY_R, resize:0, moveForMon:false, debug_level:debug_level})
 								else if appName is in app_L then
-									windowSize's windowSize({appName:appName, windowNumber:i, monPosX:dPosX_L, monPosY:dPosY_L})
+									if debug_level > 0 then
+										log "move left full size"
+										if debug_level > 1 then
+											display dialog "move left full size"
+										end if
+									end if
+									windowSize's windowSize({appName:appName, windowNumber:i, monPosX:dPosX_L, monPosY:dPosY_L, moveForMon:false, debug_level:debug_level})
 								else if appName is in app_R then
-									windowSize's windowSize({appName:appName, windowNumber:i, monPosX:dPosX_R, monPosY:dPosY_R})
+									if debug_level > 0 then
+										log "move right full size"
+										if debug_level > 1 then
+											display dialog "move right full size"
+										end if
+									end if
+									windowSize's windowSize({appName:appName, windowNumber:i, monPosX:dPosX_R, monPosY:dPosY_R, moveForMon:false, debug_level:debug_level})
 								end if
 							end repeat
 						end tell
@@ -211,5 +248,5 @@ on moveForMon(pars)
 end moveForMon
 
 on run
-	moveForMon({all:false})
+	moveForMon({})
 end run

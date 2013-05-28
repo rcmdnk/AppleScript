@@ -14,6 +14,7 @@ property DEF_MONPOSX : ""
 property DEF_MONPOSY : ""
 property DEF_RESIZE : 1
 
+property DEF_MOVEFORMON : 1
 property DEF_DEBUG_LEVEL : 0
 
 property GEEKTOOL_WINDOW : 1
@@ -22,7 +23,7 @@ property GEEKTOOL_MARGIN : 10
 -- Window size main function
 on windowSize(pars)
 	-- Set Parameters
-	set {xsize, ysize, xpos, ypos, leftmargin, rightmargin, topmargin, bottommargin, appName, windowNumber, monPosX, monPosY, resize, debug_level} to {DEF_XSIZE, DEF_YSIZE, DEF_XPOS, DEF_YPOS, DEF_LEFT_MARGIN, DEF_RIGHT_MARGIN, DEF_TOP_MARGIN, DEF_BOTTOM_MARGIN, DEF_APPNAME, DEF_WINDOWNUMBER, DEF_MONPOSX, DEF_MONPOSY, DEF_RESIZE, DEF_DEBUG_LEVEL}
+	set {xsize, ysize, xpos, ypos, leftmargin, rightmargin, topmargin, bottommargin, appName, windowNumber, monPosX, monPosY, resize, moveformon, debug_level} to {DEF_XSIZE, DEF_YSIZE, DEF_XPOS, DEF_YPOS, DEF_LEFT_MARGIN, DEF_RIGHT_MARGIN, DEF_TOP_MARGIN, DEF_BOTTOM_MARGIN, DEF_APPNAME, DEF_WINDOWNUMBER, DEF_MONPOSX, DEF_MONPOSY, DEF_RESIZE, DEF_MOVEFORMON, DEF_DEBUG_LEVEL}
 	try
 		set xsize to xsize of pars
 	end try
@@ -63,6 +64,9 @@ on windowSize(pars)
 		set resize to resize of pars
 	end try
 	try
+		set moveformon to moveformon of pars
+	end try
+	try
 		set debug_level to debug_level of pars
 	end try
 	
@@ -88,21 +92,23 @@ on windowSize(pars)
 	
 	
 	if debug_level > 0 then
-		log "windowSize(" & xsize & ", " & ysize & ", " & xpos & ", " & ypos & ", " & leftmargin & ", " & rightmargin & ", " & topmargin & ", " & bottommargin & ", " & appName & ", " & windowNumber & ", " & monPosX & ", " & monPosY & "," & resize & "," & debug_level & ")"
+		log "windowSize(" & xsize & ", " & ysize & ", " & xpos & ", " & ypos & ", " & leftmargin & ", " & rightmargin & ", " & topmargin & ", " & bottommargin & ", " & appName & ", " & windowNumber & ", " & monPosX & ", " & monPosY & "," & resize & "," & moveformon & "," & debug_level & ")"
 		if debug_level > 5 then
-			display dialog "windowSize(" & xsize & ", " & ysize & ", " & xpos & ", " & ypos & ", " & leftmargin & ", " & rightmargin & ", " & topmargin & ", " & bottommargin & ", " & appName & ", " & windowNumber & ", " & monPosX & ", " & monPosY & "," & resize & "," & debug_level & ")"
+			display dialog "windowSize(" & xsize & ", " & ysize & ", " & xpos & ", " & ypos & ", " & leftmargin & ", " & rightmargin & ", " & topmargin & ", " & bottommargin & ", " & appName & ", " & windowNumber & ", " & monPosX & ", " & monPosY & "," & resize & "," & moveformon & "," & debug_level & ")"
 		end if
 	end if
 	
-	-- First, move monitoring applications to correct places, if available
-	try
-		tell application "Finder"
-			set scriptPath to (path to me)'s folder as text
-		end tell
-		set moveForMonScpt to scriptPath & "moveForMon.scpt"
-		set moveForMon to load script file moveForMonScpt
-		moveForMon's moveForMon({all:false})
-	end try
+	-- First, move monitori
+	if moveformon then
+		try
+			tell application "Finder"
+				set scriptPath to (path to me)'s folder as text
+			end tell
+			set moveForMonScpt to scriptPath & "moveForMon.scpt"
+			set moveformon to load script file moveForMonScpt
+			moveformon's moveformon({all:false})
+		end try
+	end if
 	
 	-- Get window position
 	tell application "System Events"
