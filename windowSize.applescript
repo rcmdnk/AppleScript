@@ -14,7 +14,7 @@ property DEF_MONPOSX : ""
 property DEF_MONPOSY : ""
 property DEF_RESIZE : 1
 
-property DEF_MOVEFORMON : 1
+property DEF_MOVEFORMON : true
 property DEF_DEBUG_LEVEL : 0
 
 property GEEKTOOL_WINDOW : 1
@@ -98,7 +98,7 @@ on windowSize(pars)
 		end if
 	end if
 	
-	-- First, move monitori
+	-- First, move monitor
 	if moveformon then
 		try
 			tell application "Finder"
@@ -323,3 +323,9 @@ print vH;
 	end if
 	return {(paragraph 1 of ret) as number, (paragraph 2 of ret) as number, (paragraph 3 of ret) as number, (paragraph 4 of ret) as number}
 end getVisibleFrame
+
+
+
+on run
+	windowSize({})
+end run

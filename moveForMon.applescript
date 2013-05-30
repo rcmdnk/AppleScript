@@ -1,5 +1,5 @@
 property DEF_ALL : true
-property DEF_DEBUG_LEVEL : 0
+property DEF_DEBUG_LEVEL : 1
 
 on moveForMon(pars)
 	
@@ -75,8 +75,8 @@ on moveForMon(pars)
 	
 	-- main screen
 	set svs to windowSize's getVisibleFrame(1, 1) --+1 is used to avoid edge, especially needed for y position
-	set dPosX to item 1 of svs
-	set dPosY to item 2 of svs
+	set dPosX to (item 1 of svs) + 1
+	set dPosY to (item 2 of svs) + 1
 	set dWidth to item 3 of svs
 	set dHeight to item 4 of svs
 	
@@ -90,8 +90,8 @@ on moveForMon(pars)
 	end try
 	
 	-- try to get right screen
-	set dPosX_R to dPosX
-	set dPosY_R to dPosY
+	set dPosX_R to dPosX + 1
+	set dPosY_R to dPosY + 1
 	try
 		set svsR to windowSize's getVisibleFrame(dPosX + dWidth + 1, 1)
 		set dPosX_R to (item 1 of svsR) + 1
