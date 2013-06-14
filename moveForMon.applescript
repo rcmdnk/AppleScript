@@ -40,9 +40,9 @@ on moveForMon(pars)
 	set y_sfcCEST to 30
 	set y_sfcJST to y_sfcCEST + 100
 	set y_gtCal to y_sfcJST + 105
-	set y_gtGcal to y_gtCal + 105
-	set y_gtTask to y_gtGcal + 180
-	set y_gtPs to y_gtTask + 90
+	set y_gtGcal to y_gtCal + 115
+	set y_gtTask to y_gtGcal + 170
+	set y_gtPs to y_gtTask + 80
 	set y_XRG to y_gtPs + 75
 	
 	-- app to be excepted
