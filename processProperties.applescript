@@ -2,19 +2,19 @@ tell application "System Events"
 	--set pList to name of every process whose frontmost is true
 	--set appName to item 1 of pList
 	
-	tell process "Finder"
+	tell «class prcs» "Finder"
 		properties
 	end tell
-	tell process "Firefox"
+	tell «class prcs» "Firefox"
 		properties
 	end tell
-	tell process "Preview"
+	tell «class prcs» "Preview"
 		properties
 	end tell
-	tell process "Adobe Reader"
+	tell «class prcs» "Adobe Reader"
 		properties
 	end tell
-	tell process "Microsoft Word"
+	tell «class prcs» "Microsoft Word"
 		properties
 	end tell
 end tell

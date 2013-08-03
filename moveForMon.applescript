@@ -115,14 +115,14 @@ on moveForMon(pars)
 		-- SimpleFloatingClock
 		try
 			set appName to "SimpleFloatingClock"
-			tell process appName
+			tell «class prcs» appName
 				tell window w_sfcCEST
 					set size to {1000, 1000}
-					set position to {ledge + ledgeSFCoffset, y_sfcCEST}
+					set «class posn» to {ledge + ledgeSFCoffset, y_sfcCEST}
 				end tell
 				tell window w_sfcJST
 					set size to {1000, 1000}
-					set position to {ledge + ledgeSFCoffset, y_sfcJST}
+					set «class posn» to {ledge + ledgeSFCoffset, y_sfcJST}
 				end tell
 			end tell
 		end try
@@ -132,24 +132,24 @@ on moveForMon(pars)
 			--set appName to "GeekTool"
 			set appName to "GeekTool Helper" -- for GeekTool 3
 			
-			tell process appName
+			tell «class prcs» appName
 				set nW to number of windows
 				--display dialog appName & " in process, nWindows=" & nW
 				tell window w_gtCal
 					-- set size to {1000, 1000}
-					set position to {ledge, y_gtCal}
+					set «class posn» to {ledge, y_gtCal}
 				end tell
 				tell window w_gtGcal
 					-- set size to {1000, 1000}
-					set position to {ledge, y_gtGcal}
+					set «class posn» to {ledge, y_gtGcal}
 				end tell
 				tell window w_gtTask
 					-- set size to {1000, 1000}
-					set position to {ledge, y_gtTask}
+					set «class posn» to {ledge, y_gtTask}
 				end tell
 				tell window w_gtPs
 					-- set size to {1000, 1000}
-					set position to {ledge, y_gtPs}
+					set «class posn» to {ledge, y_gtPs}
 				end tell
 			end tell
 			--on error errMsg
@@ -159,10 +159,10 @@ on moveForMon(pars)
 		-- XRG
 		try
 			set appName to "XRG"
-			tell process appName
+			tell «class prcs» appName
 				tell window w_XRG
 					set size to {1000, 2000}
-					set position to {ledge, y_XRG}
+					set «class posn» to {ledge, y_XRG}
 				end tell
 			end tell
 		end try
@@ -172,7 +172,7 @@ on moveForMon(pars)
 	if all then
 		-- get application name
 		tell application "System Events"
-			set appList to (get name of every application process whose visible is true)
+			set appList to (get name of every «class pcap» whose visible is true)
 		end tell
 		
 		-- repeat for all app
@@ -180,7 +180,7 @@ on moveForMon(pars)
 			if appName is not in expApp then
 				tell application "System Events"
 					try
-						tell process appName
+						tell «class prcs» appName
 							set nW to number of windows
 							repeat with i from 1 to nW
 								if debug_level > 0 then

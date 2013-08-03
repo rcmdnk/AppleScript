@@ -3,16 +3,16 @@ set appName to "GeekTool Helper"
 --get application name of frontmost 
 if appName is "" then
 	tell application "System Events"
-		set pList to name of every process whose frontmost is true
+		set pList to name of every «class prcs» whose frontmost is true
 		set appName to item 1 of pList
 		display dialog appName
-		set allp to properties of every process whose frontmost is true
+		set allp to properties of every «class prcs» whose frontmost is true
 	end tell
 end if
 
 tell application "System Events"
 	try
-		tell process appName
+		tell «class prcs» appName
 			--check number of windows
 			--activate
 			set nW to number of windows
