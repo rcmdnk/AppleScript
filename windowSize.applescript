@@ -81,7 +81,7 @@ on windowSize(pars)
 	-- Get application name and window number, if appName is "", if windowNumber is not set, set 1
 	if appName is "" then
 		tell application "System Events"
-			set pList to name of every «class prcs» whose frontmost is true
+			set pList to name of every process whose frontmost is true
 			set appName to item 1 of pList
 		end tell
 	end if
@@ -112,13 +112,13 @@ on windowSize(pars)
 	
 	-- Get window position
 	tell application "System Events"
-		tell «class prcs» appName
+		tell process appName
 			try
-				set topWindow to item windowNumber of (every window whose «class focu» is true)
+				set topWindow to item windowNumber of (every window whose focused is true)
 			on error
 				set topWindow to window windowNumber
 			end try
-			set winPos to «class posn» of topWindow
+			set winPos to position of topWindow
 			set winSize to size of topWindow
 			set winPosX to item 1 of winPos
 			set winPosY to item 2 of winPos
@@ -180,9 +180,9 @@ on windowSize(pars)
 	-- Get GeekTool's position
 	tell application "System Events"
 		try
-			tell «class prcs» "GeekTool Helper"
+			tell process "GeekTool Helper"
 				set topWindow to window GEEKTOOL_WINDOW
-				set gtPos to «class posn» of topWindow
+				set gtPos to position of topWindow
 			end tell
 			set gtflag to 1
 		on error
@@ -219,9 +219,9 @@ on windowSize(pars)
 	
 	-- Resize/move
 	tell application "System Events"
-		tell «class prcs» appName
+		tell process appName
 			try
-				set topWindow to item windowNumber of (every window whose «class focu» is true)
+				set topWindow to item windowNumber of (every window whose focused is true)
 			on error
 				set topWindow to window windowNumber
 			end try
@@ -254,7 +254,7 @@ on windowSize(pars)
 					log "preoperties before= "
 					log properties
 				end if
-				set «class posn» to wpos
+				set position to wpos
 				if resize is 1 then
 					set size to wsize
 					-- When the original height is larger than the display size,
