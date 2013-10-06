@@ -30,7 +30,7 @@ end if
 -- get application name
 tell application "System Events"
 	-- get application name of frontmost 
-	set pList to name of every process whose frontmost is true
+	set pList to name of every «class prcs» whose frontmost is true
 	set appName to item 1 of pList
 	if debug > 1 then
 		display dialog appName
@@ -87,7 +87,7 @@ end if
 -- check windows in process
 if isQuit is -1 then
 	tell application "System Events"
-		tell process appName
+		tell «class prcs» appName
 			-- activate
 			-- check number of windows
 			if debug > 0 then
@@ -117,7 +117,7 @@ if isQuit is 0 then
 		display dialog "in close"
 	end if
 	tell application "System Events"
-		tell process appName
+		tell «class prcs» appName
 			-- activate
 			
 			-- using close method
@@ -133,7 +133,7 @@ if isQuit is 0 then
 					--	get properties of w
 					--end if
 					set p to properties of w
-					set s to subrole of p
+					set s to «class sbrl» of p
 					if s is not equal to "AXStandardWindow" then
 						exit repeat --exit fake loop
 					end if
@@ -141,13 +141,13 @@ if isQuit is 0 then
 					tell w
 						-- click (button 1 of (item 1 of windows)) -- button 1 is the close button… -- not for all, check "AXCloseButton"
 						set i to 1
-						repeat with p in (get properties of every button)
-							set s to subrole of p
+						repeat with p in (get properties of every «class butT»)
+							set s to «class sbrl» of p
 							if debug > 1 then
 								display dialog s
 							end if
 							if s is "AXCloseButton" then
-								click button i
+								«event prcsclic» «class butT» i
 								exit repeat
 							end if
 							set i to i + 1
