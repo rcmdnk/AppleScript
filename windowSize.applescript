@@ -316,7 +316,8 @@ print '
 print vH;
 "
 	
-	set ret to do shell script "/usr/bin/ruby -e " & quoted form of cocoaScript & " '' " & " " & x & " " & y
+	--set ret to do shell script "/usr/bin/ruby -e " & quoted form of cocoaScript & " '' " & " " & x & " " & y
+	set ret to do shell script "/System/Library/Frameworks/Ruby.framework/Versions/1.8/usr/bin/ruby -e " & quoted form of cocoaScript & " '' " & " " & x & " " & y
 	if ret is "" then
 		--display dialog "missing value"
 		return 0
