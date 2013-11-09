@@ -1,6 +1,6 @@
 #!/bin/bash
 
-exclude=('.' '..' 'README.md' 'install.sh' 'osadeall.sh')
+exclude=('.' '..' 'LICENSE' 'README.md' 'install.sh' 'osadeall.sh')
 instdir="$HOME/Library/Scripts"
 
 backup="bak"
