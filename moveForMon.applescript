@@ -1,4 +1,4 @@
-property DEF_ALL : true
+property DEF_ALL : false
 property DEF_DEBUG_LEVEL : 1
 
 on moveForMon(pars)
