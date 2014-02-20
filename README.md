@@ -10,7 +10,3 @@ Please be careful if you have same name files...
     git clone git@github.com:rcmdnk/AppleScript
     cd AppleScript
     ./install.sh
-
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/rcmdnk/applescript/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
-
