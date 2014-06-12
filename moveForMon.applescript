@@ -23,17 +23,19 @@ on moveForMon(pars)
 	-- SimpleFloatingClock
 	set w_sfcCEST to 1
 	set w_sfcJST to 2
-	-- GeekTool
-	set w_gtCal to 2
-	set w_gtGcal to 3
-	set w_gtTask to 4
-	set w_gtPs to 1
+	
 	-- XRG
 	set w_XRG to 1
 	
-	-- x posiiotn for dual/single monitor mode
-	set ledgeDual to -160
-	set ledgeSingle to 1280
+	-- set monitoring tool's name
+	-- GeekTool
+	set s_gtCal to "gcalCal"
+	set s_gtGcal to "gcalList"
+	set s_gtTask to "gtasklist"
+	set s_gtPs to "myps"
+	
+	-- x posiiotn for monitoring
+	set ledge to -160
 	set ledgeSFCoffset to 20
 	
 	-- y positions
@@ -41,8 +43,8 @@ on moveForMon(pars)
 	set y_sfcJST to y_sfcCEST + 100
 	set y_gtCal to y_sfcJST + 105
 	set y_gtGcal to y_gtCal + 115
-	set y_gtTask to y_gtGcal + 170
-	set y_gtPs to y_gtTask + 80
+	set y_gtTask to y_gtGcal + 175
+	set y_gtPs to y_gtTask + 85
 	set y_XRG to y_gtPs + 75
 	
 	-- app to be excepted
@@ -100,12 +102,11 @@ on moveForMon(pars)
 	
 	-- move monitoring tools
 	if dPosX_L < 0 then
-		set ledge to ledgeDual
 		if debug_level > 0 then
 			log "ledge to ledgeDual"
 		end if
 	else
-		set ledge to ledgeSingle
+		set ledge to dWidth + ledge
 		if debug_level > 0 then
 			log "ledge to ledgeSingle"
 		end if
@@ -127,34 +128,32 @@ on moveForMon(pars)
 			end tell
 		end try
 		
-		-- GeekTool
-		try
-			--set appName to "GeekTool"
-			set appName to "GeekTool Helper" -- for GeekTool 3
-			
-			tell process appName
-				set nW to number of windows
-				--display dialog appName & " in process, nWindows=" & nW
-				tell window w_gtCal
-					-- set size to {1000, 1000}
-					set position to {ledge, y_gtCal}
-				end tell
-				tell window w_gtGcal
-					-- set size to {1000, 1000}
-					set position to {ledge, y_gtGcal}
-				end tell
-				tell window w_gtTask
-					-- set size to {1000, 1000}
-					set position to {ledge, y_gtTask}
-				end tell
-				tell window w_gtPs
-					-- set size to {1000, 1000}
-					set position to {ledge, y_gtPs}
-				end tell
-			end tell
-			--on error errMsg
-			--	display dialog "ERROR: " & errMsg
-		end try
+		---- GeekTool
+		--try
+		--	--set appName to "GeekTool"
+		--	set appName to "GeekTool Helper" -- for GeekTool 3
+		--	
+		--	tell process appName
+		--		set nW to number of windows
+		--		--display dialog appName & " in process, nWindows=" & nW
+		--		tell window w_gtCal
+		--		end tell
+		--		tell window w_gtGcal
+		--			-- set size to {1000, 1000}
+		--			set position to {ledge, y_gtGcal}
+		--		end tell
+		--		tell window w_gtTask
+		--			-- set size to {1000, 1000}
+		--			set position to {ledge, y_gtTask}
+		--		end tell
+		--		tell window w_gtPs
+		--			-- set size to {1000, 1000}
+		--			set position to {ledge, y_gtPs}
+		--		end tell
+		--	end tell
+		--	--on error errMsg
+		--	--	display dialog "ERROR: " & errMsg
+		--end try
 		
 		-- XRG
 		try
@@ -166,6 +165,30 @@ on moveForMon(pars)
 				end tell
 			end tell
 		end try
+	end tell
+	
+	-- GeekTool (should be outside of application "System Events", and use application "GeekTool Helper" ?)
+	-- can't use position to geeklets
+	tell application "GeekTool Helper" -- can not use appName (variable), which shows error at id?
+		--geeklets
+		repeat with g in geeklets
+			tell g
+				name
+				if name is s_gtCal then
+					set x position to ledge
+					set y position to y_gtCal
+				else if name is s_gtGcal then
+					set x position to ledge
+					set y position to y_gtGcal
+				else if name is s_gtTask then
+					set x position to ledge
+					set y position to y_gtTask
+				else if name is s_gtPs then
+					set x position to ledge
+					set y position to y_gtPs
+				end if
+			end tell
+		end repeat
 	end tell
 	
 	-- Move/Resize other windows
