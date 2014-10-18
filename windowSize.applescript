@@ -274,55 +274,40 @@ on windowSize(pars)
 end windowSize
 
 -- Function to get visible frame (w/o menu bar, dock)
+use framework "AppKit"
 on getVisibleFrame(x, y)
-	set cocoaScript to "require 'osx/cocoa'; 
-x = (ARGV[1].to_i);
-y = (ARGV[2].to_i);
-
-mf = OSX::NSScreen.mainScreen().frame();
-mX = mf.origin.x
-mY = mf.origin.y
-mW = mf.size.width
-mH = mf.size.height
-sc = OSX::NSScreen.screens;
-point = OSX::NSMakePoint(x, -y + mY + mH);
-vf = 0
-for i in 0..sc.count()-1
-	f = sc[i].frame();
-	if( OSX:: NSMouseInRect(point,f,0) )
-		vf = sc[i].visibleFrame();
-		break;
-	end
-end
-
-if vf == 0
-exit 0;
-end
-
-vX = vf.origin.x
-vY = vf.origin.y
-vW = vf.size.width
-vH = vf.size.height
-
-print (vX);
-print '
-';
-print (-vY - vH + mH - mY);
-print '
-';
-print vW;
-print '
-';
-print vH;
-"
-	
-	--set ret to do shell script "/usr/bin/ruby -e " & quoted form of cocoaScript & " '' " & " " & x & " " & y
-	set ret to do shell script "/System/Library/Frameworks/Ruby.framework/Versions/1.8/usr/bin/ruby -e " & quoted form of cocoaScript & " '' " & " " & x & " " & y
-	if ret is "" then
-		--display dialog "missing value"
+	set nss to current application's NSScreen
+	set mf to nss's mainScreen's frame()
+	set mfX to mf's origin's x
+	set mfY to mf's origin's y
+	set mfW to mf's |size|'s width
+	set mfH to mf's |size|'s height
+	set p to {x:x, y:-y + mfY + mfH}
+	set vf to 0
+	repeat with sc in nss's screens()
+		set f to sc's frame()
+		if current application's NSMouseInRect(p, f, 0) then
+			set vf to sc's visibleFrame()
+			exit repeat
+		end if
+	end repeat
+	if vf is 0 then
 		return 0
 	end if
-	return {(paragraph 1 of ret) as number, (paragraph 2 of ret) as number, (paragraph 3 of ret) as number, (paragraph 4 of ret) as number}
+	set vX to vf's origin's x
+	set vY to vf's origin's y
+	set vW to vf's |size|'s width
+	set vH to vf's |size|'s height
+	
+	log vX
+	log vY
+	log vH
+	log mfH
+	log mfY
+	log -vY - vH + mfH - mfY
+	log vW
+	log vH
+	return {vX, -vY - vH + mfH - mfY, vW, vH}
 end getVisibleFrame
 
 

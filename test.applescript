@@ -1,7 +1,37 @@
-tell application "Finder"
-	set scriptPath to (path to me)'s folder as text
-end tell
-set windowSizeScpt to scriptPath & "windowSize.scpt"
-set windowSize to load script file windowSizeScpt
-set pars to {}
-windowSize's windowSize({appName:"firefox", monPosX:-1440, monPosY:1})
+set x to 10
+set y to 10
+use framework "AppKit"
+set nss to current application's NSScreen
+set mf to nss's mainScreen's frame()
+set mfX to mf's origin's x
+set mfY to mf's origin's y
+set mfW to mf's |size|'s width
+set mfH to mf's |size|'s height
+set p to {x:x, y:-y + mfY + mfH}
+set vf to 0
+repeat with sc in nss's screens()
+	set f to sc's frame()
+	if current application's NSMouseInRect(p, f, 0) then
+		set vf to sc's visibleFrame()
+		exit repeat
+	end if
+end repeat
+if vf is 0 then
+	return
+end if
+
+log mf
+log vf
+set vX to vf's origin's x
+set vY to vf's origin's y
+set vW to vf's |size|'s width
+set vH to vf's |size|'s height
+
+log vX
+log vY
+log vH
+log mfH
+log mfY
+log -vY - vH + mfH - mfY
+log vW
+log vH
