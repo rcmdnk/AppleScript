@@ -14,7 +14,7 @@ property DEF_MONPOSX : ""
 property DEF_MONPOSY : ""
 property DEF_RESIZE : 1
 
-property DEF_MOVEFORMON : true
+property DEF_MOVEFORMON_FLAG : true
 property DEF_DEBUG_LEVEL : 0
 
 property GEEKTOOL_WINDOW : 1
@@ -23,7 +23,7 @@ property GEEKTOOL_MARGIN : 10
 -- Window size main function
 on windowSize(pars)
 	-- Set Parameters
-	set {xsize, ysize, xpos, ypos, leftmargin, rightmargin, topmargin, bottommargin, appName, windowNumber, monPosX, monPosY, resize, moveformon, debug_level} to {DEF_XSIZE, DEF_YSIZE, DEF_XPOS, DEF_YPOS, DEF_LEFT_MARGIN, DEF_RIGHT_MARGIN, DEF_TOP_MARGIN, DEF_BOTTOM_MARGIN, DEF_APPNAME, DEF_WINDOWNUMBER, DEF_MONPOSX, DEF_MONPOSY, DEF_RESIZE, DEF_MOVEFORMON, DEF_DEBUG_LEVEL}
+	set {xsize, ysize, xpos, ypos, leftmargin, rightmargin, topmargin, bottommargin, appName, windowNumber, monPosX, monPosY, resize, moveformon_flag, debug_level} to {DEF_XSIZE, DEF_YSIZE, DEF_XPOS, DEF_YPOS, DEF_LEFT_MARGIN, DEF_RIGHT_MARGIN, DEF_TOP_MARGIN, DEF_BOTTOM_MARGIN, DEF_APPNAME, DEF_WINDOWNUMBER, DEF_MONPOSX, DEF_MONPOSY, DEF_RESIZE, DEF_MOVEFORMON_FLAG, DEF_DEBUG_LEVEL}
 	try
 		set xsize to xsize of pars
 	end try
@@ -64,7 +64,7 @@ on windowSize(pars)
 		set resize to resize of pars
 	end try
 	try
-		set moveformon to moveformon of pars
+		set moveformon_flag to moveformon_flag of pars
 	end try
 	try
 		set debug_level to debug_level of pars
@@ -89,25 +89,22 @@ on windowSize(pars)
 		set windowNumber to 1
 	end if
 	
-	
-	
 	if debug_level > 0 then
-		log "windowSize(" & xsize & ", " & ysize & ", " & xpos & ", " & ypos & ", " & leftmargin & ", " & rightmargin & ", " & topmargin & ", " & bottommargin & ", " & appName & ", " & windowNumber & ", " & monPosX & ", " & monPosY & "," & resize & "," & moveformon & "," & debug_level & ")"
+		log "windowSize(" & xsize & ", " & ysize & ", " & xpos & ", " & ypos & ", " & leftmargin & ", " & rightmargin & ", " & topmargin & ", " & bottommargin & ", " & appName & ", " & windowNumber & ", " & monPosX & ", " & monPosY & "," & resize & "," & moveformon_flag & "," & debug_level & ")"
 		if debug_level > 5 then
-			display dialog "windowSize(" & xsize & ", " & ysize & ", " & xpos & ", " & ypos & ", " & leftmargin & ", " & rightmargin & ", " & topmargin & ", " & bottommargin & ", " & appName & ", " & windowNumber & ", " & monPosX & ", " & monPosY & "," & resize & "," & moveformon & "," & debug_level & ")"
+			display dialog "windowSize(" & xsize & ", " & ysize & ", " & xpos & ", " & ypos & ", " & leftmargin & ", " & rightmargin & ", " & topmargin & ", " & bottommargin & ", " & appName & ", " & windowNumber & ", " & monPosX & ", " & monPosY & "," & resize & "," & moveformon_flag & "," & debug_level & ")"
 		end if
 	end if
 	
+	tell application "Finder"
+		set scriptPath to (path to me)'s folder as text
+	end tell
+	
 	-- First, move monitor
-	if moveformon then
-		try
-			tell application "Finder"
-				set scriptPath to (path to me)'s folder as text
-			end tell
-			set moveForMonScpt to scriptPath & "moveForMon.scpt"
-			set moveformon to load script file moveForMonScpt
-			moveformon's moveformon({all:false})
-		end try
+	if moveformon_flag then
+		set moveForMonScpt to scriptPath & "moveForMon.scpt"
+		set moveformon to load script file moveForMonScpt
+		moveformon's moveformon({all:false})
 	end if
 	
 	-- Get window position
@@ -139,27 +136,25 @@ on windowSize(pars)
 	end tell
 	
 	-- Get screen (display) size
+	set visibleFrameScpt to scriptPath & "visibleFrame.scpt"
+	set vf to load script file visibleFrameScpt
 	if monPosX is not "" and monPosY is not "" then
-		set svs to getVisibleFrame(monPosX, monPosY)
+		set svs to vf's getVisibleFrame(monPosX, monPosY)
 		set dPosX to item 1 of svs
-		
 	else
 		try
-			set svs to getVisibleFrame(item 1 of winPos, item 2 of winPos)
+			set svs to vf's getVisibleFrame(item 1 of winPos, item 2 of winPos)
 			set dPosX to item 1 of svs
-			
 		on error
 			try
-				set svs to getVisibleFrame(item 1 of winPosRT, item 2 of winPosRT)
+				set svs to vf's getVisibleFrame(item 1 of winPosRT, item 2 of winPosRT)
 				set dPosX to item 1 of svs
-				
 			on error
 				try
-					set svs to getVisibleFrame(item 1 of winPosLB, item 2 of winPosLB)
+					set svs to vf's getVisibleFrame(item 1 of winPosLB, item 2 of winPosLB)
 					set dPosX to item 1 of svs
-					
 				on error
-					set svs to getVisibleFrame(item 1 of winPosRB, item 2 of winPosRB)
+					set svs to vf's getVisibleFrame(item 1 of winPosRB, item 2 of winPosRB)
 					set dPosX to item 1 of svs
 				end try
 			end try
@@ -192,7 +187,7 @@ on windowSize(pars)
 	
 	-- Check if the window and GeekTool are in same screen
 	if gtflag is 1 then
-		set gtsvs to getVisibleFrame(item 1 of gtPos, item 2 of gtPos)
+		set gtsvs to vf's getVisibleFrame(item 1 of gtPos, item 2 of gtPos)
 		set gtdPosX to item 1 of gtsvs
 		set gtdPosY to item 2 of gtsvs
 		if dPosX is gtdPosX and dPosY is gtdPosY then
@@ -272,45 +267,6 @@ on windowSize(pars)
 		end tell
 	end tell
 end windowSize
-
--- Function to get visible frame (w/o menu bar, dock)
-use framework "AppKit"
-on getVisibleFrame(x, y)
-	set nss to current application's NSScreen
-	set mf to nss's mainScreen's frame()
-	set mfX to mf's origin's x
-	set mfY to mf's origin's y
-	set mfW to mf's |size|'s width
-	set mfH to mf's |size|'s height
-	set p to {x:x, y:-y + mfY + mfH}
-	set vf to 0
-	repeat with sc in nss's screens()
-		set f to sc's frame()
-		if current application's NSMouseInRect(p, f, 0) then
-			set vf to sc's visibleFrame()
-			exit repeat
-		end if
-	end repeat
-	if vf is 0 then
-		return 0
-	end if
-	set vX to vf's origin's x
-	set vY to vf's origin's y
-	set vW to vf's |size|'s width
-	set vH to vf's |size|'s height
-	
-	log vX
-	log vY
-	log vH
-	log mfH
-	log mfY
-	log -vY - vH + mfH - mfY
-	log vW
-	log vH
-	return {vX, -vY - vH + mfH - mfY, vW, vH}
-end getVisibleFrame
-
-
 
 on run
 	windowSize({})

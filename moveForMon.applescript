@@ -2,6 +2,7 @@ property DEF_ALL : false
 property DEF_DEBUG_LEVEL : 1
 
 on moveForMon(pars)
+	log "moveForMon"
 	
 	set {all, debug_level} to {DEF_ALL, DEF_DEBUG_LEVEL}
 	try
@@ -73,10 +74,12 @@ on moveForMon(pars)
 		set scriptPath to (path to me)'s folder as text
 	end tell
 	set windowSizeScpt to scriptPath & "windowSize.scpt"
-	set windowSize to load script file windowSizeScpt
+	set ws to load script file windowSizeScpt
+	set visibleFrameScpt to scriptPath & "visibleFrame.scpt"
+	set vf to load script file visibleFrameScpt
 	
 	-- main screen
-	set svs to windowSize's getVisibleFrame(1, 1) --+1 is used to avoid edge, especially needed for y position
+	set svs to vf's getVisibleFrame(1, 1) --+1 is used to avoid edge, especially needed for y position
 	set dPosX to (item 1 of svs) + 1
 	set dPosY to (item 2 of svs) + 1
 	set dWidth to item 3 of svs
@@ -86,7 +89,7 @@ on moveForMon(pars)
 	set dPosX_L to dPosX + 1
 	set dPosY_L to dPosY + 1
 	try
-		set svsL to windowSize's getVisibleFrame(-1, 1)
+		set svsL to vf's getVisibleFrame(-1, 1)
 		set dPosX_L to (item 1 of svsL) + 1
 		set dPosY_L to (item 2 of svsL) + 1
 	end try
@@ -95,7 +98,7 @@ on moveForMon(pars)
 	set dPosX_R to dPosX + 1
 	set dPosY_R to dPosY + 1
 	try
-		set svsR to windowSize's getVisibleFrame(dPosX + dWidth + 1, 1)
+		set svsR to vf's getVisibleFrame(dPosX + dWidth + 1, 1)
 		set dPosX_R to (item 1 of svsR) + 1
 		set dPosY_R to (item 2 of svsR) + 1
 	end try
@@ -173,7 +176,6 @@ on moveForMon(pars)
 		--geeklets
 		repeat with g in geeklets
 			tell g
-				name
 				if name is s_gtCal then
 					set x position to ledge
 					set y position to y_gtCal
@@ -219,7 +221,7 @@ on moveForMon(pars)
 											display dialog "half size left"
 										end if
 									end if
-									windowSize's windowSize({appName:appName, windowNumber:i, monPosX:dPosX_L, monPosY:dPosY_L, xsize:0.7, ysize:0.7, moveForMon:false, debug_level:debug_level})
+									ws's windowSize({appName:appName, windowNumber:i, monPosX:dPosX_L, monPosY:dPosY_L, xsize:0.7, ysize:0.7, moveForMon:false, debug_level:debug_level})
 								else if appName is in halfSizeApp_R then
 									if debug_level > 0 then
 										log "half size right"
@@ -227,7 +229,7 @@ on moveForMon(pars)
 											display dialog "half size right"
 										end if
 									end if
-									windowSize's windowSize({appName:appName, windowNumber:i, monPosX:dPosX_R, monPosY:dPosY_R, xsize:0.7, ysize:0.7, moveForMon:false, debug_level:debug_level})
+									ws's windowSize({appName:appName, windowNumber:i, monPosX:dPosX_R, monPosY:dPosY_R, xsize:0.7, ysize:0.7, moveForMon:false, debug_level:debug_level})
 								else if appName is in noResizeApp_L then
 									if debug_level > 0 then
 										log "half size left"
@@ -235,7 +237,7 @@ on moveForMon(pars)
 											display dialog "half size left"
 										end if
 									end if
-									windowSize's windowSize({appName:appName, windowNumber:i, monPosX:dPosX_L, monPosY:dPosY_L, resize:0, moveForMon:false, debug_level:debug_level})
+									ws's windowSize({appName:appName, windowNumber:i, monPosX:dPosX_L, monPosY:dPosY_L, resize:0, moveForMon:false, debug_level:debug_level})
 								else if appName is in noResizeApp_R then
 									if debug_level > 0 then
 										log "move right"
@@ -243,7 +245,7 @@ on moveForMon(pars)
 											display dialog "move right"
 										end if
 									end if
-									windowSize's windowSize({appName:appName, windowNumber:i, monPosX:dPosX_R, monPosY:dPosY_R, resize:0, moveForMon:false, debug_level:debug_level})
+									ws's windowSize({appName:appName, windowNumber:i, monPosX:dPosX_R, monPosY:dPosY_R, resize:0, moveForMon:false, debug_level:debug_level})
 								else if appName is in app_L then
 									if debug_level > 0 then
 										log "move left full size"
@@ -251,7 +253,7 @@ on moveForMon(pars)
 											display dialog "move left full size"
 										end if
 									end if
-									windowSize's windowSize({appName:appName, windowNumber:i, monPosX:dPosX_L, monPosY:dPosY_L, moveForMon:false, debug_level:debug_level})
+									ws's windowSize({appName:appName, windowNumber:i, monPosX:dPosX_L, monPosY:dPosY_L, moveForMon:false, debug_level:debug_level})
 								else if appName is in app_R then
 									if debug_level > 0 then
 										log "move right full size"
@@ -259,7 +261,7 @@ on moveForMon(pars)
 											display dialog "move right full size"
 										end if
 									end if
-									windowSize's windowSize({appName:appName, windowNumber:i, monPosX:dPosX_R, monPosY:dPosY_R, moveForMon:false, debug_level:debug_level})
+									ws's windowSize({appName:appName, windowNumber:i, monPosX:dPosX_R, monPosY:dPosY_R, moveForMon:false, debug_level:debug_level})
 								end if
 							end repeat
 						end tell
