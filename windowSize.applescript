@@ -13,6 +13,7 @@ property DEF_WINDOWNUMBER : ""
 property DEF_MONPOSX : ""
 property DEF_MONPOSY : ""
 property DEF_RESIZE : 1
+property DEF_DIRECTION : ""
 
 property DEF_MOVEFORMON_FLAG : true
 property DEF_DEBUG_LEVEL : 0
@@ -23,52 +24,22 @@ property GEEKTOOL_MARGIN : 10
 -- Window size main function
 on windowSize(pars)
 	-- Set Parameters
-	set {xsize, ysize, xpos, ypos, leftmargin, rightmargin, topmargin, bottommargin, appName, windowNumber, monPosX, monPosY, resize, moveformon_flag, debug_level} to {DEF_XSIZE, DEF_YSIZE, DEF_XPOS, DEF_YPOS, DEF_LEFT_MARGIN, DEF_RIGHT_MARGIN, DEF_TOP_MARGIN, DEF_BOTTOM_MARGIN, DEF_APPNAME, DEF_WINDOWNUMBER, DEF_MONPOSX, DEF_MONPOSY, DEF_RESIZE, DEF_MOVEFORMON_FLAG, DEF_DEBUG_LEVEL}
-	try
-		set xsize to xsize of pars
-	end try
-	try
-		set ysize to ysize of pars
-	end try
-	try
-		set xpos to xpos of pars
-	end try
-	try
-		set ypos to ypos of pars
-	end try
-	try
-		set leftmargin to leftmargin of pars
-	end try
-	try
-		set rightmargin to rightmargin of pars
-	end try
-	try
-		set topmargin to topmargin of pars
-	end try
-	try
-		set bottommargin to bottommargin of pars
-	end try
-	try
-		set appName to appName of pars
-	end try
-	try
-		set windowNumber to windowNumber of pars
-	end try
-	try
-		set monPosX to monPosX of pars
-	end try
-	try
-		set monPosY to monPosY of pars
-	end try
-	try
-		set resize to resize of pars
-	end try
-	try
-		set moveformon_flag to moveformon_flag of pars
-	end try
-	try
-		set debug_level to debug_level of pars
-	end try
+	set xsize to xsize of (pars & {xsize:DEF_XSIZE})
+	set ysize to ysize of (pars & {ysize:DEF_YSIZE})
+	set xpos to xpos of (pars & {xpos:DEF_XPOS})
+	set ypos to ypos of (pars & {ypos:DEF_YPOS})
+	set leftmargin to leftmargin of (pars & {leftmargin:DEF_LEFT_MARGIN})
+	set rightmargin to rightmargin of (pars & {rightmargin:DEF_RIGHT_MARGIN})
+	set topmargin to topmargin of (pars & {topmargin:DEF_TOP_MARGIN})
+	set bottommargin to bottommargin of (pars & {bottommargin:DEF_BOTTOM_MARGIN})
+	set appName to appName of (pars & {appName:DEF_APPNAME})
+	set windowNumber to windowNumber of (pars & {windowNumber:DEF_WINDOWNUMBER})
+	set monPosX to monPosX of (pars & {monPosX:DEF_MONPOSX})
+	set monPosY to monPosY of (pars & {monPosY:DEF_MONPOSY})
+	set resize to resize of (pars & {resize:DEF_RESIZE})
+	set direction to direction of (pars & {direction:DEF_DIRECTION})
+	set moveformon_flag to moveformon_flag of (pars & {moveformon_flag:DEF_MOVEFORMON_FLAG})
+	set debug_level to debug_level of (pars & {debug_level:DEF_DEBUG_LEVEL})
 	
 	-- Debug mode
 	if debug_level > 0 then
@@ -136,41 +107,119 @@ on windowSize(pars)
 	end tell
 	
 	-- Get screen (display) size
-	set visibleFrameScpt to scriptPath & "visibleFrame.scpt"
-	set vf to load script file visibleFrameScpt
+	set getFrameScpt to scriptPath & "getFrame.scpt"
+	set gf to load script file getFrameScpt
+	set vframes to gf's getAllVisibleFrames()
+	set getCurrentFrameScpt to scriptPath & "getCurrentFrame.scpt"
+	set gcf to load script file getCurrentFrameScpt
+	
 	if monPosX is not "" and monPosY is not "" then
-		set svs to vf's getVisibleFrame(monPosX, monPosY)
-		set dPosX to item 1 of svs
+		set cf to gcf's getCurrentFrame(monPosX, monPosY, vframes)
 	else
-		try
-			set svs to vf's getVisibleFrame(item 1 of winPos, item 2 of winPos)
-			set dPosX to item 1 of svs
-		on error
-			try
-				set svs to vf's getVisibleFrame(item 1 of winPosRT, item 2 of winPosRT)
-				set dPosX to item 1 of svs
-			on error
-				try
-					set svs to vf's getVisibleFrame(item 1 of winPosLB, item 2 of winPosLB)
-					set dPosX to item 1 of svs
-				on error
-					set svs to vf's getVisibleFrame(item 1 of winPosRB, item 2 of winPosRB)
-					set dPosX to item 1 of svs
-				end try
-			end try
-		end try
+		set cf to gcf's getCurrentFrame(item 1 of winPos, item 2 of winPos, vframes)
+		if cf is 0 then
+			set cf to gcf's getCurrentFrame(item 1 of winPosRT, item 2 of winPosRT, vframes)
+			if cf is 0 then
+				set cf to gcf's getCurrentFrame(item 1 of winPosLB, item 2 of winPosLB, vframes)
+				if cf is 0 then
+					set cf to gcf's getCurrentFrame(item 1 of winPosRB, item 2 of winPosRB, vframes)
+				end if
+			end if
+		end if
 	end if
 	
-	set dPosX to item 1 of svs
-	set dPosY to item 2 of svs
-	set dWidth to item 3 of svs
-	set dHeight to item 4 of svs
+	set recordlib to scriptPath & "recordlib.scpt"
+	set rb to load script file recordlib
+	
+	set frames to rb's getKeyValue(vframes, item 1 of cf)
+	set frame to item (item 2 of cf) of frames
+	
+	-- Move screen
+	if direction is not "" then
+		set fname to item 1 of cf
+		set nout to item 2 of cf
+		set nleft to length of rb's getKeyValue(vframes, "left_frames")
+		set nright to length of rb's getKeyValue(vframes, "right_frames")
+		set ntop to length of rb's getKeyValue(vframes, "top_frames")
+		set nbottom to length of rb's getKeyValue(vframes, "bottom_frames")
+		if direction is "LEFT" then
+			if fname is "main_frames" then
+				if nleft > 0 then
+					set frame to item 1 of rb's getKeyValue(vframes, "left_frames")
+				end if
+			else if fname is "left_frames" then
+				if nleft > nout then
+					set frame to item (nout + 1) of rb's getKeyValue(vframes, "left_frames")
+				end if
+			else if fname is "right_frames" then
+				if nout is 1 then
+					set frame to item 1 of rb's getKeyValue(vframes, "main_frames")
+				else
+					set frame to item (nout - 1) of rb's getKeyValue(vframes, "right_frames")
+				end if
+			end if
+		else if direction is "RIGHT" then
+			if fname is "main_frames" then
+				if nright > 0 then
+					set frame to item 1 of rb's getKeyValue(vframes, "right_frames")
+				end if
+			else if fname is "right_frames" then
+				if nright > nout then
+					set frame to item (nout + 1) of rb's getKeyValue(vframes, "right_frames")
+				end if
+			else if fname is "left_frames" then
+				if nout is 1 then
+					set frame to item 1 of rb's getKeyValue(vframes, "main_frames")
+				else
+					set frame to item (nout - 1) of rb's getKeyValue(vframes, "left_frames")
+				end if
+			end if
+		else if direction is "UP" then
+			if fname is "main_frames" then
+				if ntop > 0 then
+					set frame to item 1 of rb's getKeyValue(vframes, "top_frames")
+				end if
+			else if fname is "top_frames" then
+				if ntop > nout then
+					set frame to item (nout + 1) of rb's getKeyValue(vframes, "top_frames")
+				end if
+			else if fname is "bottom_frames" then
+				if nout is 1 then
+					set frame to item 1 of rb's getKeyValue(vframes, "main_frames")
+				else
+					set frame to item (nout - 1) of rb's getKeyValue(vframes, "bottom_frames")
+				end if
+			end if
+		else if direction is "DOWN" then
+			if fname is "main_frames" then
+				if nbottom > 0 then
+					set frame to item 1 of rb's getKeyValue(vframes, "bottom_frames")
+				end if
+			else if fname is "bottom_frames" then
+				if nbottom > nout then
+					set frame to item (nout + 1) of rb's getKeyValue(vframes, "bottom_frames")
+				end if
+			else if fname is "top_frames" then
+				if nout is 1 then
+					set frame to item 1 of rb's getKeyValue(vframes, "main_frames")
+				else
+					set frame to item (nout - 1) of rb's getKeyValue(vframes, "top_frames")
+				end if
+			end if
+		end if
+	end if
+	
+	set dPosX to origin's x of frame
+	set dPosY to origin's y of frame
+	set dWidth to |size|'s width of frame
+	set dHeight to |size|'s height of frame
 	if debug_level > 0 then
 		log "svs(" & dPosX & ", " & dPosY & ", " & dWidth & ", " & dHeight & ")"
 		if debug_level > 5 then
 			display dialog "svs(" & dPosX & ", " & dPosY & ", " & dWidth & ", " & dHeight & ")"
 		end if
 	end if
+	
 	
 	-- Get GeekTool's position
 	tell application "System Events"
@@ -187,9 +236,9 @@ on windowSize(pars)
 	
 	-- Check if the window and GeekTool are in same screen
 	if gtflag is 1 then
-		set gtsvs to vf's getVisibleFrame(item 1 of gtPos, item 2 of gtPos)
-		set gtdPosX to item 1 of gtsvs
-		set gtdPosY to item 2 of gtsvs
+		set gtsvs to gf's getVisibleFrame(item 1 of gtPos, item 2 of gtPos)
+		set gtdPosX to origin's x of gtsvs
+		set gtdPosY to origin's y of gtsvs
 		if dPosX is gtdPosX and dPosY is gtdPosY then
 			try
 				set gtSize to size of topWindow

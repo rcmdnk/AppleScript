@@ -1,16 +1,10 @@
 property DEF_ALL : false
-property DEF_DEBUG_LEVEL : 1
+property DEF_DEBUG_LEVEL : 0
 
 on moveForMon(pars)
-	log "moveForMon"
-	
-	set {all, debug_level} to {DEF_ALL, DEF_DEBUG_LEVEL}
-	try
-		set all to all of pars
-	end try
-	try
-		set debug_level to debug_level of pars
-	end try
+	-- set default variables
+	set all to all of (pars & {all:DEF_ALL})
+	set debug_level to debug_level of (pars & {debug_level:DEF_DEBUG_LEVEL})
 	
 	-- debug mode
 	if debug_level > 0 then
@@ -75,36 +69,34 @@ on moveForMon(pars)
 	end tell
 	set windowSizeScpt to scriptPath & "windowSize.scpt"
 	set ws to load script file windowSizeScpt
-	set visibleFrameScpt to scriptPath & "visibleFrame.scpt"
-	set vf to load script file visibleFrameScpt
+	set getFrameScpt to scriptPath & "getFrame.scpt"
+	set gf to load script file getFrameScpt
 	
 	-- main screen
-	set svs to vf's getVisibleFrame(1, 1) --+1 is used to avoid edge, especially needed for y position
-	set dPosX to (item 1 of svs) + 1
-	set dPosY to (item 2 of svs) + 1
-	set dWidth to item 3 of svs
-	set dHeight to item 4 of svs
+	set vframes to gf's getAllVisibleFrames()
+	set dPosX to 1
+	set dPosY to 1
+	set dWidth to |size|'s width of item 1 of (vframes's main_frames)
+	set dHeight to |size|'s height of item 1 of (vframes's main_frames)
 	
 	-- try to get left screen
 	set dPosX_L to dPosX + 1
 	set dPosY_L to dPosY + 1
-	try
-		set svsL to vf's getVisibleFrame(-1, 1)
-		set dPosX_L to (item 1 of svsL) + 1
-		set dPosY_L to (item 2 of svsL) + 1
-	end try
+	if length of vframes's left_frames > 0 then
+		set dPosX_L to (origin's x of item 1 of (vframes's left_frames)) + 1
+		set dPosY_L to (origin's y of item 1 of (vframes's left_frames)) + 1
+	end if
 	
 	-- try to get right screen
 	set dPosX_R to dPosX + 1
 	set dPosY_R to dPosY + 1
-	try
-		set svsR to vf's getVisibleFrame(dPosX + dWidth + 1, 1)
-		set dPosX_R to (item 1 of svsR) + 1
-		set dPosY_R to (item 2 of svsR) + 1
-	end try
+	if length of vframes's right_frames > 0 then
+		set dPosX_R to (origin's x of item 1 of (vframes's right_frames)) + 1
+		set dPosY_R to (origin's y of item 1 of (vframes's right_frames)) + 1
+	end if
 	
 	-- move monitoring tools
-	if dPosX_L < 0 then
+	if length of vframes's left_frames > 0 then
 		if debug_level > 0 then
 			log "ledge to ledgeDual"
 		end if
