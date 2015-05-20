@@ -305,14 +305,24 @@ on windowSize(pars)
 					-- the resize couldn't work well.
 					-- Need to resize lower edge to internal of the display ({1,1})
 					-- then resize to target size. 
-					set winSize to size
-					if item 1 of winSize > item 1 of wsize or item 2 of winSize > item 2 of wsize then
-						set size to {1, 1}
-						set size to wsize
-					end if
+					-- -> resize to {1,1} could make a crash for such a terminal with screen.
+					--    (maybe too small to resize windows.)
+					--   use {100,100} for safe.
+					-- if height is longer than display size, width can't be shorten than display size.
+					-- Then, sometime only height can be changed first in the below procedure,
+					-- then, need one more resize for the width (5 times for safe, but normamlly it should be fixed in a 2 times.)
+					repeat 5 times
+						set winSize to size
+						if item 1 of winSize > item 1 of wsize or item 2 of winSize > item 2 of wsize then
+							set size to {100, 100}
+							set size to wsize
+							delay 0.1
+						else
+							exit repeat
+						end if
+					end repeat
 				end if
 			end tell
-			
 		end tell
 	end tell
 end windowSize
