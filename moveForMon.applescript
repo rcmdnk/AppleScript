@@ -74,25 +74,26 @@ on moveForMon(pars)
 	
 	-- main screen
 	set vframes to gf's getAllVisibleFrames()
-	set dPosX to 1
-	set dPosY to 1
+	-- dpoxY needs to be enough bigger than menubar's (~23) height
+	set dPosX to 100
+	set dPosY to 100
 	set dWidth to |size|'s width of item 1 of (vframes's main_frames)
 	set dHeight to |size|'s height of item 1 of (vframes's main_frames)
 	
 	-- try to get left screen
-	set dPosX_L to dPosX + 1
-	set dPosY_L to dPosY + 1
+	set dPosX_L to dPosX
+	set dPosY_L to dPosY
 	if length of vframes's left_frames > 0 then
-		set dPosX_L to (origin's x of item 1 of (vframes's left_frames)) + 1
-		set dPosY_L to (origin's y of item 1 of (vframes's left_frames)) + 1
+		set dPosX_L to (origin's x of item 1 of (vframes's left_frames)) + 100
+		set dPosY_L to (origin's y of item 1 of (vframes's left_frames)) + 100
 	end if
 	
 	-- try to get right screen
 	set dPosX_R to dPosX + 1
 	set dPosY_R to dPosY + 1
 	if length of vframes's right_frames > 0 then
-		set dPosX_R to (origin's x of item 1 of (vframes's right_frames)) + 1
-		set dPosY_R to (origin's y of item 1 of (vframes's right_frames)) + 1
+		set dPosX_R to (origin's x of item 1 of (vframes's right_frames)) + 100
+		set dPosY_R to (origin's y of item 1 of (vframes's right_frames)) + 100
 	end if
 	
 	-- move monitoring tools

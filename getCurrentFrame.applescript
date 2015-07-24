@@ -29,9 +29,9 @@ on getCurrentFrameSA(x, y)
 	tell application "Finder"
 		set scriptPath to (path to me)'s folder as text
 	end tell
-	set visibleFrameScpt to scriptPath & "visibleFrame.scpt"
-	set vf to load script file visibleFrameScpt
-	set vframes to vf's getAllVisibleFrame()
+	set getFrameScpt to scriptPath & "getFrame.scpt"
+	set gf to load script file getFrameScpt
+	set vframes to gf's getAllVisibleFrames()
 	return getCurrentFrame(x, y, vframes)
 end getCurrentFrameSA
 
