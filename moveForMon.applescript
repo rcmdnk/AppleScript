@@ -165,22 +165,22 @@ on moveForMon(pars)
 	
 	-- GeekTool (should be outside of application "System Events", and use application "GeekTool Helper" ?)
 	-- can't use position to geeklets
-	tell application "GeekTool Helper.app" -- can not use appName (variable), which shows error at id?
+	tell application "GeekTool Helper" -- can not use appName (variable), which shows error at id?
 		--geeklets
-		repeat with g in every «class gLet»
+		repeat with g in geeklets
 			tell g
 				if name is s_gtCal then
-					set «class xpos» to ledge
-					set «class ypos» to y_gtCal
+					set x position to ledge
+					set y position to y_gtCal
 				else if name is s_gtGcal then
-					set «class xpos» to ledge
-					set «class ypos» to y_gtGcal
+					set x position to ledge
+					set y position to y_gtGcal
 				else if name is s_gtTask then
-					set «class xpos» to ledge
-					set «class ypos» to y_gtTask
+					set x position to ledge
+					set y position to y_gtTask
 				else if name is s_gtPs then
-					set «class xpos» to ledge
-					set «class ypos» to y_gtPs
+					set x position to ledge
+					set y position to y_gtPs
 				end if
 			end tell
 		end repeat
