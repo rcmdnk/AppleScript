@@ -170,17 +170,20 @@ on moveForMon(pars)
 		repeat with g in geeklets
 			tell g
 				if name is s_gtCal then
-					set x position to ledge
-					set y position to y_gtCal
+					log s_gtCal
+					set x to ledge
+					set y to y_gtCal
+					log x
+					log y
 				else if name is s_gtGcal then
-					set x position to ledge
-					set y position to y_gtGcal
+					set x to ledge
+					set y to y_gtGcal
 				else if name is s_gtTask then
-					set x position to ledge
-					set y position to y_gtTask
+					set x to ledge
+					set y to y_gtTask
 				else if name is s_gtPs then
-					set x position to ledge
-					set y position to y_gtPs
+					set x to ledge
+					set y to y_gtPs
 				end if
 			end tell
 		end repeat

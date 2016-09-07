@@ -1,4 +1,9 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+if [[ ! "$OSTYPE" =~ darwin ]];then
+  echo Can be used only in Mac.
+  exit 1
+fi
 
 exclude=('.' '..' 'LICENSE' 'README.md' 'install.sh' 'osadeall.sh')
 instdir="$HOME/Library/Scripts"
@@ -9,7 +14,7 @@ dryrun=0
 newlink=()
 updated=()
 exist=()
-curdir=`pwd -P`
+curdir=$(pwd -P)
 
 # help
 HELP="Usage: $0 [-nd] [-b <backup file postfix>] [-e <exclude file>] [-i <install dir>]

@@ -237,6 +237,9 @@ on windowSize(pars)
 	-- Check if the window and GeekTool are in same screen
 	if gtflag is 1 then
 		set gtsvs to gf's getVisibleFrame(item 1 of gtPos, item 2 of gtPos)
+		log gtPos
+		log gf
+		log gtsvs
 		set gtdPosX to origin's x of gtsvs
 		set gtdPosY to origin's y of gtsvs
 		if dPosX is gtdPosX and dPosY is gtdPosY then
