@@ -170,11 +170,8 @@ on moveForMon(pars)
 		repeat with g in geeklets
 			tell g
 				if name is s_gtCal then
-					log s_gtCal
 					set x to ledge
 					set y to y_gtCal
-					log x
-					log y
 				else if name is s_gtGcal then
 					set x to ledge
 					set y to y_gtGcal

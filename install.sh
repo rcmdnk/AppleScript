@@ -2,7 +2,7 @@
 
 if [[ ! "$OSTYPE" =~ darwin ]];then
   echo Can be used only in Mac.
-  exit 1
+  exit
 fi
 
 exclude=('.' '..' 'LICENSE' 'README.md' 'install.sh' 'osadeall.sh')
