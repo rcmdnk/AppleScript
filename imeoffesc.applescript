@@ -1,4 +1,4 @@
-property DEBUG : true
+property DEBUG : false
 property LOG_FILE : "~/imeoffesc.log"
 property JP_LIST : {"ひらがな"}
 
