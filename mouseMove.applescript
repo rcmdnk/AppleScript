@@ -12,7 +12,6 @@ on mouseMove(pars)
 			keystroke mouseKey
 		end repeat
 	end tell
-	
 end mouseMove
 
 on run

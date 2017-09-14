@@ -30,17 +30,24 @@ on moveForMon(pars)
 	set s_gtPs to "myps"
 	
 	-- x posiiotn for monitoring
-	set ledge to -160
+	set m_width to 160
+	set ledge to -1 * m_width
 	set ledgeSFCoffset to 20
 	
 	-- y positions
 	set y_sfcCEST to 30
-	set y_sfcJST to y_sfcCEST + 100
-	set y_gtCal to y_sfcJST + 105
-	set y_gtGcal to y_gtCal + 115
-	set y_gtTask to y_gtGcal + 175
-	set y_gtPs to y_gtTask + 85
-	set y_XRG to y_gtPs + 75
+	set sfc_height to 100
+	set y_sfcJST to y_sfcCEST + sfc_height
+	set y_gtCal to y_sfcJST + sfc_height + 5
+	set gtCal_height to 115
+	set y_gtGcal to y_gtCal + gtCal_height
+	set gtGcal_height to 175
+	set y_gtTask to y_gtGcal + gtGcal_height
+	set gtTask_height to 85
+	set y_gtPs to y_gtTask + gtTask_height
+	set gtPs_height to 75
+	set y_XRG to y_gtPs + gtPs_height
+	set XRG_height to 400
 	
 	-- app to be excepted
 	set expApp to {"XRG"}
@@ -114,11 +121,11 @@ on moveForMon(pars)
 			set appName to "SimpleFloatingClock"
 			tell process appName
 				tell window w_sfcCEST
-					set size to {1000, 1000}
+					set size to {m_width, sfc_height}
 					set position to {ledge + ledgeSFCoffset, y_sfcCEST}
 				end tell
 				tell window w_sfcJST
-					set size to {1000, 1000}
+					set size to {m_width, sfc_height}
 					set position to {ledge + ledgeSFCoffset, y_sfcJST}
 				end tell
 			end tell
@@ -156,7 +163,7 @@ on moveForMon(pars)
 			set appName to "XRG"
 			tell process appName
 				tell window w_XRG
-					set size to {1000, 2000}
+					set size to {m_width, XRG_height}
 					set position to {ledge, y_XRG}
 				end tell
 			end tell

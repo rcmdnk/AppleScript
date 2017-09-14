@@ -311,9 +311,15 @@ on windowSize(pars)
 					-- if height is longer than display size, width can't be shorten than display size.
 					-- Then, sometime only height can be changed first in the below procedure,
 					-- then, need one more resize for the width (5 times for safe, but normamlly it should be fixed in a 2 times.)
+					-- In addition, sometime winSize is set to a little different (0.5 or so) from wsize.
+					-- wsHalf always repeats 5 times as it set wsize + 0.5 width always...
+					-- To avoid this, compare winSize + 10 and wsize. 
 					repeat 5 times
 						set winSize to size
-						if item 1 of winSize > item 1 of wsize or item 2 of winSize > item 2 of wsize then
+						-- display dialog "winSize(" & item 1 of winSize & ", " & item 2 of winSize & "), wsize(" & item 1 of wsize & ", " & item 2 of wsize & ")"
+						
+						if item 1 of winSize > (item 1 of wsize) + 10 or item 2 of winSize > (item 2 of wsize) + 10 then
+							
 							set size to {100, 100}
 							set size to wsize
 							delay 0.1
