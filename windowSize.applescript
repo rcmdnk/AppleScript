@@ -127,6 +127,14 @@ on windowSize(pars)
 			end if
 		end if
 	end if
+	if debug_level > 0 then
+		log "current frame"
+		log cf
+		if debug_level > 5 then
+			display dialog "current frame"
+			display dialog cf
+		end if
+	end if
 	
 	set recordlib to scriptPath & "recordlib.scpt"
 	set rb to load script file recordlib
@@ -208,18 +216,16 @@ on windowSize(pars)
 			end if
 		end if
 	end if
-	
-	set dPosX to origin's x of frame
-	set dPosY to origin's y of frame
-	set dWidth to |size|'s width of frame
-	set dHeight to |size|'s height of frame
+	set dPosX to gf's getFrameOriginX(frame)
+	set dPosY to gf's getFrameOriginY(frame)
+	set dWidth to gf's getFrameWidth(frame)
+	set dHeight to gf's getFrameHeight(frame)
 	if debug_level > 0 then
 		log "svs(" & dPosX & ", " & dPosY & ", " & dWidth & ", " & dHeight & ")"
 		if debug_level > 5 then
 			display dialog "svs(" & dPosX & ", " & dPosY & ", " & dWidth & ", " & dHeight & ")"
 		end if
 	end if
-	
 	
 	-- Get GeekTool's position
 	tell application "System Events"
@@ -237,8 +243,8 @@ on windowSize(pars)
 	-- Check if the window and GeekTool are in same screen
 	if gtflag is 1 then
 		set gtsvs to gf's getVisibleFrame(item 1 of gtPos, item 2 of gtPos)
-		set gtdPosX to origin's x of gtsvs
-		set gtdPosY to origin's y of gtsvs
+		set gtdPosX to gf's getFrameOriginX(gtsvs)
+		set gtdPosY to gf's getFrameOriginY(gtsvs)
 		if dPosX is gtdPosX and dPosY is gtdPosY then
 			try
 				set gtSize to size of topWindow

@@ -4,6 +4,8 @@ on getCurrentFrame(x, y, vframes)
 	end tell
 	set recordlib to scriptPath & "recordlib.scpt"
 	set rb to load script file recordlib
+	set getframe to scriptPath & "getFrame.scpt"
+	set gf to load script file getframe
 	set positions to {"main_frames", "left_frames", "right_frames", "top_frames", "bottom_frames"}
 	--repeat with pos in positions
 	--	return pos
@@ -15,7 +17,7 @@ on getCurrentFrame(x, y, vframes)
 		set frames to rb's getKeyValue(vframes, pos)
 		repeat with i from 1 to frames's length
 			set f to item i of frames
-			if x ≥ f's origin's x and x ≤ (f's origin's x) + (f's |size|'s width) and y ≥ f's origin's y and y ≤ (f's origin's y) + (f's |size|'s height) then
+			if x ≥ gf's getFrameOriginX(f) and x ≤ (gf's getFrameOriginX(f)) + (gf's getFrameWidth(f)) and y ≥ gf's getFrameOriginY(f) and y ≤ (gf's getFrameOriginY(f)) + (gf's getFrameHeight(f)) then
 				return {pos, i, vframes}
 			end if
 		end repeat
@@ -25,7 +27,6 @@ end getCurrentFrame
 
 on getCurrentFrameSA(x, y)
 	-- get current frame stand alone (w/o vframes input)
-	
 	tell application "Finder"
 		set scriptPath to (path to me)'s folder as text
 	end tell

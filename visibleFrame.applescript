@@ -27,3 +27,7 @@ on getVisibleFrame(x, y)
 	-- Therefore, second (y) is recalculated as left upper origin version.
 	return {vX, -vY - vH + mfH - mfY, vW, vH}
 end getVisibleFrame
+
+on run
+	getVisibleFrame(0, 0)
+end run
