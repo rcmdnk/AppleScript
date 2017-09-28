@@ -8,7 +8,7 @@ fi
 exclude=('.' '..' 'LICENSE' 'README.md' 'install.sh' 'osadeall.sh')
 instdir="$HOME/Library/Scripts"
 
-backup="bak"
+backup=""
 overwrite=1
 dryrun=0
 newlink=()
@@ -22,9 +22,8 @@ HELP="Usage: $0 [-nd] [-b <backup file postfix>] [-e <exclude file>] [-i <instal
 Install *applescript to user's folder as *scpt, by compiling with osacompile
 
 Arguments:
-      -b  Set backup postfix (default: make *.bak file)
-          Set \"\" if backups are not necessary
-      -e  Set additional exclude file (default: ${exclude[@]})
+      -b  Set backup postfix, like \"bak\" (default: \"\": no back up is made)
+      -e  Set additional exclude file (default: ${exclude[*]})
       -i  Set install directory (default: $instdir)
       -n  Don't overwrite if file is already exist
       -d  Dry run, don't install anything
@@ -47,12 +46,12 @@ echo "Install X.applescript to $instdir/X.scpt"
 echo "**********************************************"
 echo
 if [ $dryrun -ne 1 ];then
-  mkdir -p $instdir
+  mkdir -p "$instdir"
 else
   echo "*** This is dry run, not install anything ***"
 fi
 for f in *.applescript;do
-  for e in ${exclude[@]};do
+  for e in "${exclude[@]}";do
     flag=0
     if [ "$f" = "$e" ];then
       flag=1
@@ -71,8 +70,8 @@ for f in *.applescript;do
   tmpscpt=".${name}.tmp"
   osacompile -o "$tmpscpt" "$curdir/$f"
 
-  if [ "`ls "$instdir/$name" 2>/dev/null`" != "" ];then
-    diffret=$(diff $instdir/$name $tmpscpt)
+  if [ "$(ls "$instdir/$name" 2>/dev/null)" != "" ];then
+    diffret=$(diff "$instdir/$name" "$tmpscpt")
     if [ "$diffret" != "" ];then
       updated=(${updated[@]} "$name")
       if [ $dryrun -eq 1 ];then
@@ -106,15 +105,15 @@ elif [ "$backup" != "" ];then
 else
   echo "Following files have updates, replaced old one:"
 fi
-echo "  ${updated[@]}"
+echo "  ${updated[*]}"
 echo
 if [ $dryrun -eq 1 ];then
   echo "Following files don't exist:"
 else
   echo "Following files were newly installed:"
 fi
-echo "  ${newlink[@]}"
+echo "  ${newlink[*]}"
 echo
 echo -n "Following files exist and have no updaets"
-echo "  ${exist[@]}"
+echo "  ${exist[*]}"
 echo
