@@ -67,9 +67,7 @@ on windowSize(pars)
 		end if
 	end if
 	
-	tell application "Finder"
-		set scriptPath to (path to me)'s folder as text
-	end tell
+	set scriptPath to ((path to me as text) & "::")
 	
 	-- First, move monitor
 	if moveformon_flag then

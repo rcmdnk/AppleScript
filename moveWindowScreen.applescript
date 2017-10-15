@@ -17,9 +17,7 @@ on moveWindowScreen(pars)
 		set windowNumber to 1
 	end if
 	
-	tell application "Finder"
-		set scriptPath to (path to me)'s folder as text
-	end tell
+	set scriptPath to ((path to me as text) & "::")
 	
 	-- debug mode
 	if debug_level > 0 then

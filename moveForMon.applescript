@@ -71,9 +71,7 @@ on moveForMon(pars)
 	set app_R to {"iTerm"}
 	
 	-- get screen size
-	tell application "Finder"
-		set scriptPath to (path to me)'s folder as text
-	end tell
+	set scriptPath to ((path to me as text) & "::")
 	set windowSizeScpt to scriptPath & "windowSize.scpt"
 	set ws to load script file windowSizeScpt
 	set getFrameScpt to scriptPath & "getFrame.scpt"

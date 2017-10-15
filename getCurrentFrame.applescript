@@ -1,7 +1,5 @@
 on getCurrentFrame(x, y, vframes)
-	tell application "Finder"
-		set scriptPath to (path to me)'s folder as text
-	end tell
+	set scriptPath to ((path to me as text) & "::")
 	set recordlib to scriptPath & "recordlib.scpt"
 	set rb to load script file recordlib
 	set getframe to scriptPath & "getFrame.scpt"
@@ -27,9 +25,7 @@ end getCurrentFrame
 
 on getCurrentFrameSA(x, y)
 	-- get current frame stand alone (w/o vframes input)
-	tell application "Finder"
-		set scriptPath to (path to me)'s folder as text
-	end tell
+	set scriptPath to ((path to me as text) & "::")
 	set getFrameScpt to scriptPath & "getFrame.scpt"
 	set gf to load script file getFrameScpt
 	set vframes to gf's getAllVisibleFrames()
