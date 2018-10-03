@@ -1,4 +1,5 @@
-set appName to "GeekTool Helper"
+--set appName to "GeekTool Helper"
+set appName to "Google Chrome"
 --set appName to ""
 
 --get application name of frontmost 
@@ -7,7 +8,8 @@ if appName is "" then
 		set pList to name of every process whose frontmost is true
 		set appName to item 1 of pList
 		--display dialog appName
-		set allp to properties of every process whose frontmost is true
+		log appName
+		set appName to properties of every process whose frontmost is true
 	end tell
 end if
 
@@ -18,16 +20,16 @@ tell application "System Events"
 			--activate
 			set nW to number of windows
 			--display dialog appName & " in process, nWindows=" & nW
-			tell window gcalcal
-				size
-				position
-				properties
-				name
-				command
-			end tell
-			--repeat with w in windows
-			--	properties
-			--end repeat
+			repeat with w in windows
+				set p to position of w
+				set s to size of w
+				set x to item 1 of p
+				set y to item 2 of p
+				log "position: (x, y) = (" & x & ", " & y & ")"
+				set x to item 1 of s
+				set y to item 2 of s
+				log "size    : (x, y) = (" & x & ", " & y & ")"
+			end repeat
 		end tell
 	on error
 		--display dialog "can't get nWindows in process"

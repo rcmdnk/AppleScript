@@ -17,7 +17,7 @@ exist=()
 curdir=$(pwd -P)
 
 # help
-HELP="Usage: $0 [-nd] [-b <backup file postfix>] [-e <exclude file>] [-i <install dir>]
+HELP="Usage: $0 [-ndsh] [-b <backup file postfix>] [-e <exclude file>] [-i <install dir>]
 
 Install *applescript to user's folder as *scpt, by compiling with osacompile
 
@@ -27,15 +27,17 @@ Arguments:
       -i  Set install directory (default: $instdir)
       -n  Don't overwrite if file is already exist
       -d  Dry run, don't install anything
+      -s  Use 'pwd' instead of 'pwd -P' to make a symbolic link
       -h  Print Help (this message) and exit
 "
-while getopts b:e:i:ndh OPT;do
+while getopts b:e:i:ndsh OPT;do
   case $OPT in
     "b" ) backup=$OPTARG ;;
-    "e" ) exclude=(${exclude[@]} "$OPTARG") ;;
+    "e" ) exclude=("${exclude[@]}" "$OPTARG") ;;
     "i" ) instdir="$OPTARG" ;;
     "n" ) overwrite=0 ;;
     "d" ) dryrun=1 ;;
+    "s" ) curdir=$(pwd) ;;
     "h" ) echo "$HELP" 1>&2; exit ;;
     * ) echo "$HELP" 1>&2; exit 1;;
   esac

@@ -57,7 +57,11 @@ on windowSize(pars)
 		end tell
 	end if
 	if windowNumber is "" then
-		set windowNumber to 1
+		if appName is "Google Chrome" then
+			set windowNumber to 2
+		else
+			set windowNumber to 1
+		end if
 	end if
 	
 	if debug_level > 0 then

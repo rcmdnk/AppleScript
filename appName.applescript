@@ -7,5 +7,5 @@ display dialog appName
 
 tell application "Finder"
 	set AppList to name of every process
-	log AppList
+	display dialog AppList
 end tell
