@@ -58,13 +58,18 @@ for scpt in $instdir/*.scpt;do
     continue
   fi
   name=${f%.scpt}.applescript
+  orig="$scpt"
+  target="$curdir/$name"
+  if [[ "$orig" -ot "$target" ]];then
+    continue
+  fi
   install=1
   if [ $dryrun -eq 1 ];then
     install=0
   fi
 
   tmpscript=.${name}.tmp
-  osadecompile "$scpt" > "$tmpscript"
+  osadecompile "$orig" > "$tmpscript"
   while :;do
     if [ "$(tail -n1 "$tmpscript")" = "" ];then
       # Mac's sed need zero-length extension after -i not to make backup
@@ -78,18 +83,18 @@ for scpt in $instdir/*.scpt;do
     fi
   done
 
-  if [ "$(ls "$curdir/$name" 2>/dev/null)" != "" ];then
-    diffret=$(diff "$curdir/$name" "$tmpscript")
+  if [ "$(ls "$target" 2>/dev/null)" != "" ];then
+    diffret=$(diff "$target" "$tmpscript")
     if [ "$diffret" != "" ];then
       updated=(${updated[@]} "$name")
       if [ $dryrun -eq 1 ];then
-        :
+        echo -n ""
       elif [ $overwrite -eq 0 ];then
         install=0
       elif [ "$backup" != "" ];then
-        mv "$curdir/$name" "$curdir/${name}.$backup"
+        mv "$target" "${target}.$backup"
       else
-        rm "$curdir/$name"
+        rm "$target"
       fi
     else
       exist=(${exist[@]} "$name")
@@ -99,7 +104,7 @@ for scpt in $instdir/*.scpt;do
     newlink=(${newlink[@]} "$name")
   fi
   if [ $install -eq 1 ];then
-    mv "$tmpscript" "$name"
+    mv "$tmpscript" "$target"
   fi
   rm -f "$tmpscript"
 done

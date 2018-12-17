@@ -64,36 +64,45 @@ for f in *.applescript;do
     continue
   fi
   name=${f%.applescript}.scpt
+  orig="$curdir/$f"
+  target="$instdir/$name"
+  if [[ "$orig" -ot "$target" ]];then
+    continue
+  fi
+
   install=1
   if [ $dryrun -eq 1 ];then
     install=0
   fi
 
   tmpscpt=".${name}.tmp"
-  osacompile -o "$tmpscpt" "$curdir/$f"
+  osacompile -o "$tmpscpt" "$orig"
 
-  if [ "$(ls "$instdir/$name" 2>/dev/null)" != "" ];then
-    diffret=$(diff "$instdir/$name" "$tmpscpt")
-    if [ "$diffret" != "" ];then
+  if [ "$(ls "$target" 2>/dev/null)" != "" ];then
+    diffret=$(diff "$target" "$tmpscpt")
+    echo hoge
+    #if [ "$diffret" != "" ];then
       updated=(${updated[@]} "$name")
       if [ $dryrun -eq 1 ];then
         echo -n ""
       elif [ $overwrite -eq 0 ];then
         install=0
       elif [ "$backup" != "" ];then
-        mv "$instdir/$name" "$instdir/${name}.$backup"
+        mv "$target" "${target}.$backup"
       else
-        rm "$instdir/$name"
+        rm "$target"
       fi
-    else
-      exist=(${exist[@]} "$name")
-      install=0
-    fi
+      echo $dryrun $overwrite $install
+    #else
+    #  exist=(${exist[@]} "$name")
+    #  install=0
+    #fi
   else
     newlink=(${newlink[@]} "$name")
   fi
   if [ $install -eq 1 ];then
-    mv "$tmpscpt" "$instdir/$name"
+    echo mv "$tmpscpt" "$target"
+    mv "$tmpscpt" "$target"
   fi
   rm -f "$tmpscpt"
 done
