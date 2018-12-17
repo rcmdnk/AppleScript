@@ -80,7 +80,6 @@ for f in *.applescript;do
 
   if [ "$(ls "$target" 2>/dev/null)" != "" ];then
     diffret=$(diff "$target" "$tmpscpt")
-    echo hoge
     #if [ "$diffret" != "" ];then
       updated=(${updated[@]} "$name")
       if [ $dryrun -eq 1 ];then
@@ -92,7 +91,6 @@ for f in *.applescript;do
       else
         rm "$target"
       fi
-      echo $dryrun $overwrite $install
     #else
     #  exist=(${exist[@]} "$name")
     #  install=0
