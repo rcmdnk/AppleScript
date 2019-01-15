@@ -59,9 +59,13 @@ on windowSize(pars)
 	if windowNumber is "" then
 		if appName is "Google Chrome" then
 			set windowNumber to 2
+			set wnList to {2, 1}
 		else
 			set windowNumber to 1
+			set wnList to {1}
 		end if
+	else
+		set wnList to {windowNumber}
 	end if
 	
 	if debug_level > 0 then
@@ -269,74 +273,78 @@ on windowSize(pars)
 	-- Subtract geekToolWidth from display width
 	set dWidth to dWidth - geekToolWidth
 	
+	
 	-- Resize/move
 	tell application "System Events"
+		
 		tell process appName
-			try
-				set topWindow to item windowNumber of (every window whose focused is true)
-			on error
-				set topWindow to window windowNumber
-			end try
-			-- Set screen size w/o margins
-			--set useSize to {dWidth - leftmargin - rightmargin, dHeight - topmargin - bottommargin}
-			--if debug_level > 0 then
-			--	log "useSize(" & item 1 of useSize & ", " & item 2 of useSize & ")"
-			--	if debug_level > 5 then
-			--		display dialog "useSize(" & item 1 of useSize & ", " & item 2 of useSize & ")"
-			--	end if
-			--end if
-			-- No margin w/o edges of screen
-			--set wpos to {dPosX + leftmargin + xpos * (item 1 of useSize), dPosY + topmargin + ypos * (item 2 of useSize)}
-			--set wsize to {xsize * (item 1 of useSize), ysize * (item 2 of useSize)}
-			
-			-- Set margin in any place
-			set wpos to {dPosX + leftmargin + xpos * dWidth, dPosY + topmargin + ypos * dHeight}
-			set wsize to {xsize * dWidth - leftmargin - rightmargin, ysize * dHeight - topmargin - bottommargin}
-			
-			if debug_level > 0 then
-				log "wpos(" & item 1 of wpos & ", " & item 2 of wpos & ")"
-				log "wsize(" & item 1 of wsize & ", " & item 2 of wsize & ")"
-				if debug_level > 5 then
-					display dialog "wpos(" & item 1 of wpos & ", " & item 2 of wpos & ")"
-					display dialog "wsize(" & item 1 of wsize & ", " & item 2 of wsize & ")"
-				end if
-			end if
-			tell topWindow
+			repeat with wn in wnList
+				try
+					set topWindow to item wn of (every window whose focused is true)
+				on error
+					set topWindow to window wn
+				end try
+				-- Set screen size w/o margins
+				--set useSize to {dWidth - leftmargin - rightmargin, dHeight - topmargin - bottommargin}
+				--if debug_level > 0 then
+				--	log "useSize(" & item 1 of useSize & ", " & item 2 of useSize & ")"
+				--	if debug_level > 5 then
+				--		display dialog "useSize(" & item 1 of useSize & ", " & item 2 of useSize & ")"
+				--	end if
+				--end if
+				-- No margin w/o edges of screen
+				--set wpos to {dPosX + leftmargin + xpos * (item 1 of useSize), dPosY + topmargin + ypos * (item 2 of useSize)}
+				--set wsize to {xsize * (item 1 of useSize), ysize * (item 2 of useSize)}
+				
+				-- Set margin in any place
+				set wpos to {dPosX + leftmargin + xpos * dWidth, dPosY + topmargin + ypos * dHeight}
+				set wsize to {xsize * dWidth - leftmargin - rightmargin, ysize * dHeight - topmargin - bottommargin}
+				
 				if debug_level > 0 then
-					log "preoperties before= "
-					log properties
+					log "wpos(" & item 1 of wpos & ", " & item 2 of wpos & ")"
+					log "wsize(" & item 1 of wsize & ", " & item 2 of wsize & ")"
+					if debug_level > 5 then
+						display dialog "wpos(" & item 1 of wpos & ", " & item 2 of wpos & ")"
+						display dialog "wsize(" & item 1 of wsize & ", " & item 2 of wsize & ")"
+					end if
 				end if
-				set position to wpos
-				if resize is 1 then
-					set size to wsize
-					-- When the original height is larger than the display size,
-					-- the resize couldn't work well.
-					-- Need to resize lower edge to internal of the display ({1,1})
-					-- then resize to target size. 
-					-- -> resize to {1,1} could make a crash for such a terminal with screen.
-					--    (maybe too small to resize windows.)
-					--   use {100,100} for safe.
-					-- if height is longer than display size, width can't be shorten than display size.
-					-- Then, sometime only height can be changed first in the below procedure,
-					-- then, need one more resize for the width (5 times for safe, but normamlly it should be fixed in a 2 times.)
-					-- In addition, sometime winSize is set to a little different (0.5 or so) from wsize.
-					-- wsHalf always repeats 5 times as it set wsize + 0.5 width always...
-					-- To avoid this, compare winSize + 10 and wsize. 
-					repeat 5 times
-						set winSize to size
-						-- display dialog "winSize(" & item 1 of winSize & ", " & item 2 of winSize & "), wsize(" & item 1 of wsize & ", " & item 2 of wsize & ")"
-						
-						if item 1 of winSize > (item 1 of wsize) + 10 or item 2 of winSize > (item 2 of wsize) + 10 then
+				tell topWindow
+					if debug_level > 0 then
+						log "preoperties before= "
+						log properties
+					end if
+					set position to wpos
+					if resize is 1 then
+						set size to wsize
+						-- When the original height is larger than the display size,
+						-- the resize couldn't work well.
+						-- Need to resize lower edge to internal of the display ({1,1})
+						-- then resize to target size. 
+						-- -> resize to {1,1} could make a crash for such a terminal with screen.
+						--    (maybe too small to resize windows.)
+						--   use {100,100} for safe.
+						-- if height is longer than display size, width can't be shorten than display size.
+						-- Then, sometime only height can be changed first in the below procedure,
+						-- then, need one more resize for the width (5 times for safe, but normamlly it should be fixed in a 2 times.)
+						-- In addition, sometime winSize is set to a little different (0.5 or so) from wsize.
+						-- wsHalf always repeats 5 times as it set wsize + 0.5 width always...
+						-- To avoid this, compare winSize + 10 and wsize. 
+						repeat 5 times
+							set winSize to size
+							-- display dialog "winSize(" & item 1 of winSize & ", " & item 2 of winSize & "), wsize(" & item 1 of wsize & ", " & item 2 of wsize & ")"
 							
-							set size to {100, 100}
-							set size to wsize
-							delay 0.1
-						else
-							exit repeat
-						end if
-					end repeat
-				end if
-			end tell
+							if item 1 of winSize > (item 1 of wsize) + 10 or item 2 of winSize > (item 2 of wsize) + 10 then
+								
+								set size to {100, 100}
+								set size to wsize
+								delay 0.1
+							else
+								exit repeat
+							end if
+						end repeat
+					end if
+				end tell
+			end repeat
 		end tell
 	end tell
 end windowSize
