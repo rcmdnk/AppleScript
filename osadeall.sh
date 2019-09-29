@@ -1,4 +1,9 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+if [[ ! "$OSTYPE" =~ darwin ]];then
+  echo Can be used only in Mac.
+  exit
+fi
 
 exclude=('.' '..' 'LICENSE' 'README.md' 'install.sh' 'osadeall.sh')
 instdir="$HOME/Library/Scripts"
