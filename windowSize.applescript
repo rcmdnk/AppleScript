@@ -1,3 +1,9 @@
+property USE_SIDEBAR : false
+property GEEKTOOL_WINDOW : 1
+property GEEKTOOL_MARGIN : 10
+
+property CHROME_FIX : false
+
 property DEF_XSIZE : 1
 property DEF_YSIZE : 1
 property DEF_XPOS : 0
@@ -17,9 +23,6 @@ property DEF_DIRECTION : ""
 
 property DEF_MOVEFORMON_FLAG : true
 property DEF_DEBUG_LEVEL : 0
-
-property GEEKTOOL_WINDOW : 1
-property GEEKTOOL_MARGIN : 10
 
 -- Window size main function
 on windowSize(pars)
@@ -57,7 +60,7 @@ on windowSize(pars)
 		end tell
 	end if
 	if windowNumber is "" then
-		if appName is "Google Chrome" then
+		if CHROME_FIX and appName is "Google Chrome" then
 			set windowNumber to 2
 			set wnList to {2, 1}
 		else
@@ -78,7 +81,7 @@ on windowSize(pars)
 	set scriptPath to ((path to me as text) & "::")
 	
 	-- First, move monitor
-	if moveformon_flag then
+	if USE_SIDEBAR and moveformon_flag then
 		set moveForMonScpt to scriptPath & "moveForMon.scpt"
 		set moveformon to load script file moveForMonScpt
 		moveformon's moveformon({all:false})
@@ -234,19 +237,21 @@ on windowSize(pars)
 	end if
 	
 	-- Get GeekTool's position
-	tell application "System Events"
-		try
-			tell process "GeekTool Helper"
-				set topWindow to window GEEKTOOL_WINDOW
-				set gtPos to position of topWindow
-			end tell
-			set gtflag to 1
-		on error
-			set gtflag to 0
-		end try
-	end tell
+	set gtflag to 0
+	if USE_SIDEBAR then
+		tell application "System Events"
+			try
+				tell process "GeekTool Helper"
+					set topWindow to window GEEKTOOL_WINDOW
+					set gtPos to position of topWindow
+				end tell
+				set gtflag to 1
+			end try
+		end tell
+	end if
 	
 	-- Check if the window and GeekTool are in same screen
+	set geekToolWidth to 0
 	if gtflag is 1 then
 		set gtsvs to gf's getVisibleFrame(item 1 of gtPos, item 2 of gtPos)
 		set gtdPosX to gf's getFrameOriginX(gtsvs)
@@ -256,11 +261,7 @@ on windowSize(pars)
 				set gtSize to size of topWindow
 				set geekToolWidth to item 1 of gtSize
 				set geekToolWidth to geekToolWidth + GEEKTOOL_MARGIN -- additional margin
-			on error
-				set geekToolWidth to 0
 			end try
-		else
-			set geekToolWidth to 0
 		end if
 	end if
 	--if item 1 of winPos < 0 then

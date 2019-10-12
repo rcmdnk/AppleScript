@@ -1,3 +1,4 @@
+property USE_SIDEBAR : false
 property DEF_ALL : false
 property DEF_DEBUG_LEVEL : 0
 
@@ -14,40 +15,42 @@ on moveForMon(pars)
 		end if
 	end if
 	
-	-- set monitoring tools' positions
-	-- SimpleFloatingClock
-	set w_sfcCEST to 1
-	set w_sfcJST to 2
-	
-	-- XRG
-	set w_XRG to 1
-	
-	-- set monitoring tool's name
-	-- GeekTool
-	set s_gtCal to "gcalCal"
-	set s_gtGcal to "gcalList"
-	set s_gtTask to "gtasklist"
-	set s_gtPs to "myps"
-	
-	-- x posiiotn for monitoring
-	set m_width to 160
-	set ledge to -1 * m_width
-	set ledgeSFCoffset to 20
-	
-	-- y positions
-	set y_sfcCEST to 30
-	set sfc_height to 100
-	set y_sfcJST to y_sfcCEST + sfc_height
-	set y_gtCal to y_sfcJST + sfc_height + 5
-	set gtCal_height to 115
-	set y_gtGcal to y_gtCal + gtCal_height
-	set gtGcal_height to 175
-	set y_gtTask to y_gtGcal + gtGcal_height
-	set gtTask_height to 85
-	set y_gtPs to y_gtTask + gtTask_height
-	set gtPs_height to 75
-	set y_XRG to y_gtPs + gtPs_height
-	set XRG_height to 400
+	if USE_SIDEBAR then
+		-- set monitoring tools' positions
+		-- SimpleFloatingClock
+		set w_sfcCEST to 1
+		set w_sfcJST to 2
+		
+		-- XRG
+		set w_XRG to 1
+		
+		-- set monitoring tool's name
+		-- GeekTool
+		set s_gtCal to "gcalCal"
+		set s_gtGcal to "gcalList"
+		set s_gtTask to "gtasklist"
+		set s_gtPs to "myps"
+		
+		-- x posiiotn for monitoring
+		set m_width to 160
+		set ledge to -1 * m_width
+		set ledgeSFCoffset to 20
+		
+		-- y positions
+		set y_sfcCEST to 30
+		set sfc_height to 100
+		set y_sfcJST to y_sfcCEST + sfc_height
+		set y_gtCal to y_sfcJST + sfc_height + 5
+		set gtCal_height to 115
+		set y_gtGcal to y_gtCal + gtCal_height
+		set gtGcal_height to 175
+		set y_gtTask to y_gtGcal + gtGcal_height
+		set gtTask_height to 85
+		set y_gtPs to y_gtTask + gtTask_height
+		set gtPs_height to 75
+		set y_XRG to y_gtPs + gtPs_height
+		set XRG_height to 400
+	end if
 	
 	-- app to be excepted
 	set expApp to {"XRG"}
@@ -101,95 +104,97 @@ on moveForMon(pars)
 		set dPosY_R to (gf's getFrameOriginY(item 1 of (vframes's right_frames))) + 100
 	end if
 	
-	-- move monitoring tools
-	if length of vframes's left_frames > 0 then
-		if debug_level > 0 then
-			log "ledge to ledgeDual"
+	if USE_SIDEBAR then
+		-- move monitoring tools
+		if length of vframes's left_frames > 0 then
+			if debug_level > 0 then
+				log "ledge to ledgeDual"
+			end if
+		else
+			set ledge to dWidth + ledge
+			if debug_level > 0 then
+				log "ledge to ledgeSingle"
+			end if
 		end if
-	else
-		set ledge to dWidth + ledge
-		if debug_level > 0 then
-			log "ledge to ledgeSingle"
-		end if
+		
+		tell application "System Events"
+			-- SimpleFloatingClock
+			try
+				set appName to "SimpleFloatingClock"
+				tell process appName
+					tell window w_sfcCEST
+						set size to {m_width, sfc_height}
+						set position to {ledge + ledgeSFCoffset, y_sfcCEST}
+					end tell
+					tell window w_sfcJST
+						set size to {m_width, sfc_height}
+						set position to {ledge + ledgeSFCoffset, y_sfcJST}
+					end tell
+				end tell
+			end try
+			
+			---- GeekTool
+			--try
+			--	--set appName to "GeekTool"
+			--	set appName to "GeekTool Helper" -- for GeekTool 3
+			--	
+			--	tell process appName
+			--		set nW to number of windows
+			--		--display dialog appName & " in process, nWindows=" & nW
+			--		tell window w_gtCal
+			--		end tell
+			--		tell window w_gtGcal
+			--			-- set size to {1000, 1000}
+			--			set position to {ledge, y_gtGcal}
+			--		end tell
+			--		tell window w_gtTask
+			--			-- set size to {1000, 1000}
+			--			set position to {ledge, y_gtTask}
+			--		end tell
+			--		tell window w_gtPs
+			--			-- set size to {1000, 1000}
+			--			set position to {ledge, y_gtPs}
+			--		end tell
+			--	end tell
+			--	--on error errMsg
+			--	--	display dialog "ERROR: " & errMsg
+			--end try
+			
+			-- XRG
+			try
+				set appName to "XRG"
+				tell process appName
+					tell window w_XRG
+						set size to {m_width, XRG_height}
+						set position to {ledge, y_XRG}
+					end tell
+				end tell
+			end try
+		end tell
+		
+		-- GeekTool (should be outside of application "System Events", and use application "GeekTool Helper" ?)
+		-- can't use position to geeklets
+		tell application "GeekTool Helper" -- can not use appName (variable), which shows error at id?
+			--geeklets
+			repeat with g in geeklets
+				tell g
+					if name is s_gtCal then
+						set x to ledge
+						set y to y_gtCal
+					else if name is s_gtGcal then
+						set x to ledge
+						set y to y_gtGcal
+					else if name is s_gtTask then
+						set x to ledge
+						set y to y_gtTask
+					else if name is s_gtPs then
+						set x to ledge
+						set y to y_gtPs
+					end if
+				end tell
+			end repeat
+		end tell
 	end if
-	
-	tell application "System Events"
-		-- SimpleFloatingClock
-		try
-			set appName to "SimpleFloatingClock"
-			tell process appName
-				tell window w_sfcCEST
-					set size to {m_width, sfc_height}
-					set position to {ledge + ledgeSFCoffset, y_sfcCEST}
-				end tell
-				tell window w_sfcJST
-					set size to {m_width, sfc_height}
-					set position to {ledge + ledgeSFCoffset, y_sfcJST}
-				end tell
-			end tell
-		end try
-		
-		---- GeekTool
-		--try
-		--	--set appName to "GeekTool"
-		--	set appName to "GeekTool Helper" -- for GeekTool 3
-		--	
-		--	tell process appName
-		--		set nW to number of windows
-		--		--display dialog appName & " in process, nWindows=" & nW
-		--		tell window w_gtCal
-		--		end tell
-		--		tell window w_gtGcal
-		--			-- set size to {1000, 1000}
-		--			set position to {ledge, y_gtGcal}
-		--		end tell
-		--		tell window w_gtTask
-		--			-- set size to {1000, 1000}
-		--			set position to {ledge, y_gtTask}
-		--		end tell
-		--		tell window w_gtPs
-		--			-- set size to {1000, 1000}
-		--			set position to {ledge, y_gtPs}
-		--		end tell
-		--	end tell
-		--	--on error errMsg
-		--	--	display dialog "ERROR: " & errMsg
-		--end try
-		
-		-- XRG
-		try
-			set appName to "XRG"
-			tell process appName
-				tell window w_XRG
-					set size to {m_width, XRG_height}
-					set position to {ledge, y_XRG}
-				end tell
-			end tell
-		end try
-	end tell
-	
-	-- GeekTool (should be outside of application "System Events", and use application "GeekTool Helper" ?)
-	-- can't use position to geeklets
-	tell application "GeekTool Helper" -- can not use appName (variable), which shows error at id?
-		--geeklets
-		repeat with g in geeklets
-			tell g
-				if name is s_gtCal then
-					set x to ledge
-					set y to y_gtCal
-				else if name is s_gtGcal then
-					set x to ledge
-					set y to y_gtGcal
-				else if name is s_gtTask then
-					set x to ledge
-					set y to y_gtTask
-				else if name is s_gtPs then
-					set x to ledge
-					set y to y_gtPs
-				end if
-			end tell
-		end repeat
-	end tell
 	
 	-- Move/Resize other windows
 	if all then
