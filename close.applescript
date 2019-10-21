@@ -14,7 +14,7 @@ set alwaysQuit to {"cooViewer"}
 
 -- always close, w/o quit
 -- set alwaysClose to {"thunderbird", "thunderbird-bin", "Skype", "Finder", "X11.bin", "Evernote"}
-set alwaysClose to {"Mail", "Skype", "Finder", "X11.bin", "Evernote"}
+set alwaysClose to {"Mail", "Skype", "Finder", "X11.bin", "Evernote", "Slack"}
 
 -- for below applications, use nWindows in applicatoin
 set useApplication to {"Microsoft Word", "Microsoft Excel", "EverNote"}
