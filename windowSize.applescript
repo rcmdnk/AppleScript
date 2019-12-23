@@ -2,7 +2,7 @@ property USE_SIDEBAR : false
 property GEEKTOOL_WINDOW : 1
 property GEEKTOOL_MARGIN : 10
 
-property CHROME_FIX : true
+property CHROME_FIX : false
 
 property DEF_XSIZE : 1
 property DEF_YSIZE : 1
