@@ -174,7 +174,7 @@ on moveForMon(pars)
 		
 		-- GeekTool (should be outside of application "System Events", and use application "GeekTool Helper" ?)
 		-- can't use position to geeklets
-    tell application "GeekTool Helper" -- can not use appName (variable), which shows error at id?
+		tell application "GeekTool Helper" -- can not use appName (variable), which shows error at id?
 			--geeklets
 			repeat with g in geeklets
 				tell g
