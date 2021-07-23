@@ -50,7 +50,11 @@ if [ $dryrun -ne 1 ];then
 else
   echo "*** This is dry run, not convert anything ***"
 fi
+mkdir -p "$instdir"
 for scpt in $instdir/*.scpt;do
+  if [ ! -f "$scpt" ];then
+    continue
+  fi
   f=$(basename "$scpt")
   for e in "${exclude[@]}";do
     flag=0
