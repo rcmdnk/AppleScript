@@ -10,46 +10,46 @@ on highSierra()
 end highSierra
 
 on getFrameOriginX(frame)
-	if highSierra() then
-		return item 1 of item 1 of frame
-	else
-		return frame's origin's x
-	end if
+	-- if highSierra() then
+	return item 1 of item 1 of frame
+	--else
+	--	return frame's origin's x
+	--end if
 end getFrameOriginX
 
 on getFrameOriginY(frame)
-	if highSierra() then
-		return item 2 of item 1 of frame
-	else
-		return frame's origin's y
-	end if
+	--if highSierra() then
+	return item 2 of item 1 of frame
+	--else
+	--	return frame's origin's y
+	--end if
 end getFrameOriginY
 
 on getFrameWidth(frame)
-	if highSierra() then
-		return item 1 of item 2 of frame
-	else
-		return frame's |size|'s width
-	end if
+	--if highSierra() then
+	return item 1 of item 2 of frame
+	--else
+	--	return frame's |size|'s width
+	--end if
 end getFrameWidth
 
 on getFrameHeight(frame)
-	if highSierra() then
-		return item 2 of item 2 of frame
-	else
-		return frame's |size|'s height
-	end if
+	--if highSierra() then
+	return item 2 of item 2 of frame
+	--else
+	--	return frame's |size|'s height
+	--end if
 end getFrameHeight
 
 on convertToWindowFrame(frame, mfH)
 	-- Visible Frame's origin is left lower,
 	-- while an origin of "position of window" in windowSize function is left upper.
 	-- Therefore, second (y) is recalculated as left upper origin version.
-	if highSierra() then
-		set item 2 of item 1 of frame to -(getFrameOriginY(frame)) - (getFrameHeight(frame)) + mfH
-	else
-		set frame's origin's y to -(frame's origin's y) - (frame's |size|'s height) + mfH
-	end if
+	--if highSierra() then
+	set item 2 of item 1 of frame to -(getFrameOriginY(frame)) - (getFrameHeight(frame)) + mfH
+	--else
+	--	set frame's origin's y to -(frame's origin's y) - (frame's |size|'s height) + mfH
+	--end if
 	return frame
 end convertToWindowFrame
 
